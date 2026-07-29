@@ -1,0 +1,15 @@
+[theme]
+# Warna utama (untuk tombol, aksen, garis loading)
+primaryColor = "#1a4d38"
+
+# Warna latar belakang halaman utama (hijau pastel medis sangat lembut)
+backgroundColor = "#f3f8f6"
+
+# Warna latar belakang sidebar (putih bersih)
+secondaryBackgroundColor = "#ffffff"
+
+# Warna teks utama
+textColor = "#1e1e1e"
+
+# Jenis huruf
+font = "sans serif"

@@ -1,0 +1,14 @@
+======================================
+🏥 LAPORAN REKAM MEDIS - KLINIK HARAPAN SEHAT
+======================================
+Waktu Konsultasi : 23 July 2026 - 14:27:19
+Keluhan Awal     : B
+
+HASIL ANALISIS SISTEM:
+Anda merasa sakit kepala berdenyutnya terkait dengan perubahan cuaca. Apakah gejala Anda juga sering disertai dengan salah satu hal berikut ini?
+A. Demam atau panas
+B. Nyeri saat buang air kecil
+C. Kesulitan menggerakkan anggota tubuh
+D. Lainnya / tidak yakin
+======================================
+*Dokumen ini dicetak otomatis oleh Sistem AI Klinik Harapan Sehat*

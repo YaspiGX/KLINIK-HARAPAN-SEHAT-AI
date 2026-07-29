@@ -1,0 +1,30 @@
+======================================
+🏥 LAPORAN REKAM MEDIS - KLINIK HARAPAN SEHAT
+======================================
+Waktu Konsultasi : 24 July 2026 - 10:55:37
+Keluhan Awal     : Pasien perempuan, usia 42 tahun. Keluhan utama sakit kepala sebelah yang berdenyut hebat sejak 3 bulan yang lalu. Sering disertai pusing dan mual terutama saat melihat cahaya terang. Pasien memiliki riwayat keluarga dengan penyakit migrain
+
+HASIL ANALISIS SISTEM:
+🏥 **HASIL ANALISIS KLINIK HARAPAN SEHAT**
+Berdasarkan gejala yang Anda sebutkan, berikut adalah 3 kemungkinan kondisi dari yang paling relevan:
+
+1. **Migrain**
+   ✅ *Gejala yang cocok:* Sakit kepala sebelah, berdenyut hebat, disertai mual, pusing, dan sensitif terhadap cahaya terang.
+   ❌ *Gejala yang tidak cocok/kurang:* Tidak ada gejala yang tidak cocok, karena riwayat keluarga dengan migrain juga mendukung kemungkinan ini.
+
+2. **Sakit Kepala Tegang (Tension Headache)**
+   ✅ *Gejala yang cocok:* Sakit kepala, pusing.
+   ❌ *Gejala yang tidak cocok/kurang:* Sakit kepala sebelah dan berdenyut hebat tidak biasa untuk sakit kepala tegang, serta tidak disertai sensitif terhadap cahaya.
+
+3. **Sakit Kepala Cluster**
+   ✅ *Gejala yang cocok:* Sakit kepala sebelah yang hebat.
+   ❌ *Gejala yang tidak cocok/kurang:* Sakit kepala cluster biasanya disertai dengan gejala seperti mata merah, hidung tersumbat, atau keringat di sisi wajah yang terkena, yang tidak disebutkan dalam gejala Anda.
+
+🔍 **PERTANYAAN LANJUTAN UNTUK MEMASTIKAN:**
+1. Apakah sakit kepala Anda selalu terjadi di sisi yang sama atau bisa berganti-ganti sisi?
+2. Apakah Anda mengalami aura sebelum sakit kepala, seperti melihat kilatan cahaya atau mengalami perubahan sensorik lainnya?
+
+⚠️ **REKOMENDASI MEDIS:**
+Diperlukan pemeriksaan lebih lanjut oleh dokter spesialis saraf untuk menegakkan diagnosis yang akurat. Mungkin diperlukan juga pemeriksaan penunjang seperti MRI kepala untuk memastikan tidak ada kondisi lain yang menyebabkan gejala serupa. Pengobatan dapat dimulai dengan obat anti-migrain dan perubahan gaya hidup untuk mengurangi frekuensi dan intensitas serangan.
+======================================
+*Dokumen ini dicetak otomatis oleh Sistem AI Klinik Harapan Sehat*

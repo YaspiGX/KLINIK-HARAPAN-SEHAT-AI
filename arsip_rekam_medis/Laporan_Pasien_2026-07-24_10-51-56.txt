@@ -1,0 +1,30 @@
+======================================
+🏥 LAPORAN REKAM MEDIS - KLINIK HARAPAN SEHAT
+======================================
+Waktu Konsultasi : 24 July 2026 - 10:51:56
+Keluhan Awal     : Pasien perempuan, usia 42 tahun. Keluhan utama sakit kepala sebelah yang berdenyut hebat sejak 3 bulan yang lalu. Sering disertai pusing dan mual terutama saat melihat cahaya terang. Pasien memiliki riwayat keluarga dengan penyakit migrain
+
+HASIL ANALISIS SISTEM:
+🏥 **HASIL ANALISIS KLINIK HARAPAN SEHAT**
+Berdasarkan gejala yang Anda sebutkan, berikut adalah 3 kemungkinan kondisi dari yang paling relevan:
+
+1. **Migrain**
+   ✅ *Gejala yang cocok:* Sakit kepala sebelah yang berdenyut, mual, pusing, dan sensitifitas terhadap cahaya terang
+   ❌ *Gejala yang tidak cocok/kurang:* Tidak ada gejala yang tidak cocok, karena sebagian besar gejala yang Anda deskripsikan konsisten dengan migrain
+
+2. **Tension Headache**
+   ✅ *Gejala yang cocok:* Sakit kepala, pusing
+   ❌ *Gejala yang tidak cocok/kurang:* Tidak ada gejala berdenyut hebat dan sensitifitas terhadap cahaya terang yang khas untuk tension headache
+
+3. **Cluster Headache**
+   ✅ *Gejala yang cocok:* Sakit kepala sebelah yang hebat
+   ❌ *Gejala yang tidak cocok/kurang:* Tidak ada gejala berupa keluarnya air mata atau hidung tersumbat yang biasanya menyertai cluster headache
+
+🔍 **PERTANYAAN LANJUTAN UNTUK MEMASTIKAN:**
+1. Apakah sakit kepala yang Anda alami biasanya dipicu oleh faktor-faktor tertentu seperti stres, kurang tidur, atau konsumsi makanan tertentu?
+2. Apakah Anda mengalami gejala lain seperti aura sebelum sakit kepala, yaitu gejala neurologis sementara seperti gangguan penglihatan atau sensorik?
+
+⚠️ **REKOMENDASI MEDIS:**
+Untuk memastikan diagnosis, kami sarankan Anda untuk berkonsultasi dengan dokter spesialis saraf untuk pemeriksaan lebih lanjut. Dokter mungkin akan memesan pemeriksaan penunjang seperti MRI kepala untuk mengesampingkan kemungkinan penyebab lain dari sakit kepala. Selain itu, dokter juga dapat membantu mengembangkan rencana pengobatan yang efektif untuk mengelola gejala migrain, termasuk pengobatan untuk mencegah serangan migrain dan mengurangi gejala saat serangan terjadi.
+======================================
+*Dokumen ini dicetak otomatis oleh Sistem AI Klinik Harapan Sehat*
