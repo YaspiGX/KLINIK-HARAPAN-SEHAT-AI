@@ -1,0 +1,30 @@
+======================================
+🏥 LAPORAN REKAM MEDIS - KLINIK HARAPAN SEHAT
+======================================
+Waktu Konsultasi : 24 July 2026 - 13:51:38
+Keluhan Awal     : Anak laki-laki, usia 4 tahun, dibawa oleh ibunya. Keluhan batuk berdahak dan pilek sejak 3 hari yang lalu. Namun sejak tadi pagi, napas anak terlihat sangat cepat, dada tampak cekung ke dalam saat menarik napas, dan terdengar bunyi 'ngik-ngik' (mengi). Anak tampak gelisah, rewel, dan menolak minum susu. Ayah pasien memiliki riwayat asma.
+
+HASIL ANALISIS SISTEM:
+🏥 **HASIL ANALISIS KLINIK HARAPAN SEHAT**
+Berdasarkan gejala yang Anda sebutkan, berikut adalah 3 kemungkinan kondisi dari yang paling relevan:
+
+1. **Asma**
+   ✅ *Gejala yang cocok:* Batuk berdahak, pilek, napas cepat, dada cekung ke dalam saat menarik napas, dan bunyi 'ngik-ngik' (mengi) yang terdengar saat inhalasi atau exhalasi.
+   ❌ *Gejala yang tidak cocok/kurang:* Tidak ada gejala yang secara signifikan tidak cocok, tetapi perlu dipertimbangkan apakah ada faktor pencetus seperti alergi atau infeksi yang memperberat gejala.
+
+2. **Bronkiolitis**
+   ✅ *Gejala yang cocok:* Batuk berdahak, pilek, napas cepat, dan bunyi 'ngik-ngik' (mengi) dapat ditemukan pada bronkiolitis, terutama jika disebabkan oleh infeksi virus seperti RSV.
+   ❌ *Gejala yang tidak cocok/kurang:* Dada cekung ke dalam saat menarik napas lebih umum ditemukan pada asma atau kondisi obstruktif lainnya, tetapi bisa juga terlihat pada kasus bronkiolitis yang parah.
+
+3. **Pneumonia**
+   ✅ *Gejala yang cocok:* Batuk berdahak dan napas cepat bisa merupakan gejala pneumonia, terutama jika disertai dengan suhu tinggi atau gejala infeksi lainnya.
+   ❌ *Gejala yang tidak cocok/kurang:* Bunyi 'ngik-ngik' (mengi) tidak biasa ditemukan pada pneumonia, kecuali jika ada komponen obstruktif atau reaktif terhadap inflamasi paru.
+
+🔍 **PERTANYAAN LANJUTAN UNTUK MEMASTIKAN:**
+1. Apakah ada riwayat paparan alergen atau iritan yang baru-baru ini, seperti asap rokok, debu, atau bulu hewan?
+2. Bagaimana pola dan frekuensi batuk berdahak, apakah terjadi terutama pada malam hari atau setelah aktivitas tertentu?
+
+⚠️ **REKOMENDASI MEDIS:**
+Saran ke dokter spesialis paru anak untuk evaluasi lebih lanjut dan penanganan yang tepat. Mungkin diperlukan pemeriksaan fisik, spirometri (jika memungkinkan pada usia ini), atau rontgen dada untuk menentukan penyebab pasti gejala. Penggunaan nebulizer dengan salbutamol bisa dipertimbangkan untuk membantu mengatasi gejala obstruktif, tetapi harus diawasi dan diberikan atas saran dokter.
+======================================
+*Dokumen ini dicetak otomatis oleh Sistem AI Klinik Harapan Sehat*

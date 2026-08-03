@@ -1,0 +1,30 @@
+======================================
+🏥 LAPORAN REKAM MEDIS - KLINIK HARAPAN SEHAT
+======================================
+Waktu Konsultasi : 24 July 2026 - 13:42:36
+Keluhan Awal     : laki-laki umur 32 keluhan sakit perut di sertai dengan pusing tinggi badan 167 berat badan 66
+
+HASIL ANALISIS SISTEM:
+🏥 **HASIL ANALISIS KLINIK HARAPAN SEHAT**
+Berdasarkan gejala yang Anda sebutkan, berikut adalah 3 kemungkinan kondisi dari yang paling relevan:
+
+1. **Keracunan Makanan**
+   ✅ *Gejala yang cocok:* Sakit perut, pusing, muntah, dan diare yang terjadi setelah mengonsumsi makanan tertentu
+   ❌ *Gejala yang tidak cocok/kurang:* Gejala lain seperti demam tinggi, nyeri sendi, dan bintik kemerahan di kulit tidak disebutkan
+
+2. **Gastroenteritis**
+   ✅ *Gejala yang cocok:* Sakit perut, muntah, diare, dan pusing
+   ❌ *Gejala yang tidak cocok/kurang:* Gejala lain seperti demam tinggi, nyeri sendi, dan bintik kemerahan di kulit tidak disebutkan
+
+3. **Infeksi Saluran Cerna**
+   ✅ *Gejala yang cocok:* Sakit perut, diare, muntah, dan pusing
+   ❌ *Gejala yang tidak cocok/kurang:* Gejala lain seperti demam tinggi, nyeri sendi, dan bintik kemerahan di kulit tidak disebutkan
+
+🔍 **PERTANYAAN LANJUTAN UNTUK MEMASTIKAN:**
+1. Apakah Anda mengalami gejala lain seperti demam, nyeri sendi, atau bintik kemerahan di kulit?
+2. Apakah Anda baru saja mengonsumsi makanan yang tidak biasa atau tidak segar?
+
+⚠️ **REKOMENDASI MEDIS:**
+Jika gejala Anda tidak membaik dalam 2-3 hari, segera konsultasikan dengan dokter untuk melakukan pemeriksaan fisik dan tes laboratorium jika diperlukan. Selain itu, pastikan untuk banyak minum air dan mengonsumsi makanan yang ringan dan mudah dicerna. Jika gejala Anda semakin parah atau Anda mengalami dehidrasi, segera kunjungi IGD terdekat.
+======================================
+*Dokumen ini dicetak otomatis oleh Sistem AI Klinik Harapan Sehat*

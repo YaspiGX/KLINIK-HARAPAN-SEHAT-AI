@@ -1,0 +1,14 @@
+======================================
+🏥 LAPORAN REKAM MEDIS - KLINIK HARAPAN SEHAT
+======================================
+Waktu Konsultasi : 23 July 2026 - 14:27:26
+Keluhan Awal     : C
+
+HASIL ANALISIS SISTEM:
+Anda merasa ada kaitan antara sakit kepala dengan kesulitan menggerakkan anggota tubuh. Bagaimana pola makan Anda sehari-hari, apakah termasuk konsumsi salah satu hal berikut ini?
+A. Banyak minum kopi atau alkohol
+B. Sering mengonsumsi makanan pedas atau asin
+C. Mengonsumsi suplemen harian
+D. Lainnya / tidak yakin
+======================================
+*Dokumen ini dicetak otomatis oleh Sistem AI Klinik Harapan Sehat*

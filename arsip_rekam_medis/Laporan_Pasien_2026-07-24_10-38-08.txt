@@ -1,0 +1,30 @@
+======================================
+🏥 LAPORAN REKAM MEDIS - KLINIK HARAPAN SEHAT
+======================================
+Waktu Konsultasi : 24 July 2026 - 10:38:08
+Keluhan Awal     : Pasien perempuan, usia 32 tahun. Keluhan utama sakit kepala sebelah yang berdenyut hebat sejak 3 bulan yang lalu. Sering disertai pusing dan mual terutama saat melihat cahaya terang. Pasien memiliki riwayat keluarga dengan penyakit migrain
+
+HASIL ANALISIS SISTEM:
+🏥 **HASIL ANALISIS KLINIK HARAPAN SEHAT**
+Berdasarkan gejala yang Anda sebutkan, berikut adalah 3 kemungkinan kondisi dari yang paling relevan:
+
+1. **Migrain**
+   ✅ *Gejala yang cocok:* Sakit kepala sebelah, berdenyut hebat, disertai mual, pusing, dan sensitif terhadap cahaya terang.
+   ❌ *Gejala yang tidak cocok/kurang:* Tidak ada gejala yang tidak cocok, karena riwayat keluarga dengan migrain juga mendukung kemungkinan ini.
+
+2. **Sindrom Kawasiswa**
+   ✅ *Gejala yang cocok:* Sakit kepala sebelah, berdenyut hebat, disertai mual.
+   ❌ *Gejala yang tidak cocok/kurang:* Gejala sensitif terhadap cahaya terang dan pusing tidak selalu ada pada sindrom kawasiswa.
+
+3. **Tensi Vaskuler**
+   ✅ *Gejala yang cocok:* Sakit kepala sebelah, berdenyut hebat.
+   ❌ *Gejala yang tidak cocok/kurang:* Gejala mual, pusing, dan sensitif terhadap cahaya terang tidak selalu ada pada tensi vaskuler.
+
+🔍 **PERTANYAAN LANJUTAN UNTUK MEMASTIKAN:**
+1. Apakah sakit kepala Anda semakin parah saat melakukan aktivitas fisik atau stres?
+2. Apakah Anda mengalami gejala aura sebelum sakit kepala, seperti melihat bintik-bintik atau mendengar suara aneh?
+
+⚠️ **REKOMENDASI MEDIS:**
+Saran untuk melakukan pemeriksaan lanjutan dengan dokter spesialis saraf untuk menentukan penyebab pasti sakit kepala Anda. Selain itu, disarankan untuk melakukan tes darah untuk memeriksa kemungkinan adanya kondisi lain yang terkait dengan gejala yang Anda rasakan.
+======================================
+*Dokumen ini dicetak otomatis oleh Sistem AI Klinik Harapan Sehat*

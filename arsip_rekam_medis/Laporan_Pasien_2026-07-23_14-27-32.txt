@@ -1,0 +1,32 @@
+======================================
+🏥 LAPORAN REKAM MEDIS - KLINIK HARAPAN SEHAT
+======================================
+Waktu Konsultasi : 23 July 2026 - 14:27:32
+Keluhan Awal     : D
+
+HASIL ANALISIS SISTEM:
+🏥 **HASIL ANALISIS KLINIK HARAPAN SEHAT**
+Berdasarkan gejala & jawaban Anda, berikut 3 kemungkinan kondisi:
+
+1. **Migrain**
+   ✅ *Gejala yang cocok:* Sakit kepala sebelah yang berdenyut, pusing, mual, dan sensitif terhadap cahaya
+   ❌ *Gejala yang tidak cocok/kurang:* Demam, nyeri saat buang air kecil
+
+2. **Sindrom Vaskular**
+   ✅ *Gejala yang cocok:* Sakit kepala berdenyut, pusing, dan terkadang disertai kesulitan menggerakkan anggota tubuh
+   ❌ *Gejala yang tidak cocok/kurang:* Mual dan sensitif terhadap cahaya tidak selalu ada
+
+3. **Tensi Darah Tinggi**
+   ✅ *Gejala yang cocok:* Sakit kepala berdenyut dan pusing
+   ❌ *Gejala yang tidak cocok/kurang:* Gejala lain seperti mual dan sensitif terhadap cahaya tidak umum
+
+⚠️ **REKOMENDASI MEDIS:**
+Sebaiknya Anda berkonsultasi dengan dokter untuk pemeriksaan lebih lanjut dan penentuan diagnosis yang akurat. Tes darah dan pemeriksaan tekanan darah mungkin diperlukan.
+
+🔍 **INGIN MENGGALI LEBIH LANJUT?** Pilih salah satu:
+A. Jelaskan migrain lebih detail
+B. Jelaskan sindrom vaskular lebih detail
+C. Jelaskan tensi darah tinggi lebih detail
+D. Saya butuh saran obat/pertolongan pertama
+======================================
+*Dokumen ini dicetak otomatis oleh Sistem AI Klinik Harapan Sehat*
