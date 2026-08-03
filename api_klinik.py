@@ -342,3 +342,9 @@ async def admin_hapus_data(db_target: str, item_id: int):
 async def admin_edit_data(db_target: str, item_id: int, data: EditData):
     target_db = DB_UMUM if db_target == "umum" else DB_GIGI
     return edit_data_logic(target_db, item_id, data)
+
+if __name__ == "__main__":
+    import os
+    import uvicorn
+    port = int(os.environ.get("PORT", 8080))
+    uvicorn.run("api_klinik:app", host="0.0.0.0", port=port)
