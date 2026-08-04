@@ -18,6 +18,8 @@ type ChatMessage = { id: string; role: "user" | "doctor"; content: string; };
 
 function makeId() { return Math.random().toString(36).slice(2) + Date.now().toString(36); }
 
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'https://klinik-harapan-sehat-ai-production-3384.up.railway.app';
+
 const QUICK_PROMPTS = [
   "Saya demam dan pusing sejak kemarin",
   "Bagaimana pola makan sehat?",
@@ -150,15 +152,16 @@ function Index() {
   // ✨ PERBAIKAN: FETCH OTOMATIS MENGIKUTI ALAMAT BROWSER
   // ========================================================
   const fetchRiwayat = async () => {
-    try {
-      const res = await fetch('https://klinik-harapan-sehat-ai-production-3384.up.railway.app/riwayat');
-      if (res.ok) {
-        const data = await res.json();
-        setHistory(data);
-      }
-    } catch {
-      console.log("Gagal memuat riwayat database.");
+  try {
+    const res = await fetch(`${API_BASE_URL}/riwayat`);
+    if (res.ok) {
+      const data = await res.json();
+      setHistory(data);
     }
+  } catch {
+    console.log("Gagal memuat riwayat database.");
+  }
+};
   };
 
   useEffect(() => {
@@ -282,12 +285,13 @@ function Index() {
     setLoading(true);
     setError(null);
 
-    try {
-      const res = await fetch('https://klinik-harapan-sehat-ai-production-3384.up.railway.app/konsultasi', {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: updated }),
-      });
+   try {
+  const res = await fetch(`${API_BASE_URL}/konsultasi`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ messages: updated }),
+  });
+  // ... sisa kodenya tetap sama ...
       
       if (!res.ok) throw new Error("Server sedang sibuk");
       const data = await res.json();
