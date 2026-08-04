@@ -301,6 +301,18 @@ function Index() {
     }
   }
 
+  // INI FUNGSI YANG KEMARIN SEMPAT HILANG
+  function handleSubmit(e?: FormEvent) { 
+    e?.preventDefault(); 
+    sendMessage(input.trim()); 
+  }
+
+  // INI FILTER YANG KEMARIN SEMPAT HILANG
+  const filteredHistory = history.filter(item => 
+    item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.date.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   if (!userRole) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-900 px-4">
