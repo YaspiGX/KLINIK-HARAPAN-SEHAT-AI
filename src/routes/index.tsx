@@ -151,7 +151,7 @@ function Index() {
   // ========================================================
   const fetchRiwayat = async () => {
     try {
-      const res = await fetch(`http://${window.location.hostname}:8000/riwayat`);
+      const res = await fetch('https://klinik-harapan-sehat-ai-production-3384.up.railway.app/riwayat');
       if (res.ok) {
         const data = await res.json();
         setHistory(data);
@@ -282,22 +282,17 @@ function Index() {
     setLoading(true);
     setError(null);
 
-    try {
-      const res = await fetch(`http://${window.location.hostname}:8000/konsultasi`, {
+ try {
+      const res = await fetch('https://klinik-harapan-sehat-ai-production-3384.up.railway.app/konsultasi', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: updated }),
       });
+      
       if (!res.ok) throw new Error("Server sedang sibuk");
       const data = await res.json();
       setMessages([...updated, { id: makeId(), role: "doctor", content: data.pesan }]);
       fetchRiwayat();
-    } catch {
-      setError("Gagal menghubungi server. Pastikan API Python sudah menyala.");
-    } finally {
-      setLoading(false);
-      inputRef.current?.focus();
-    }
   }
 
   function handleSubmit(e?: FormEvent) { e?.preventDefault(); sendMessage(input.trim()); }
