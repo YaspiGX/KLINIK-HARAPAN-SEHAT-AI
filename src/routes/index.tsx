@@ -282,7 +282,7 @@ function Index() {
     setLoading(true);
     setError(null);
 
- try {
+    try {
       const res = await fetch('https://klinik-harapan-sehat-ai-production-3384.up.railway.app/konsultasi', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -293,14 +293,13 @@ function Index() {
       const data = await res.json();
       setMessages([...updated, { id: makeId(), role: "doctor", content: data.pesan }]);
       fetchRiwayat();
+    } catch {
+      setError("Gagal menghubungi server. Pastikan API Python sudah menyala.");
+    } finally {
+      setLoading(false);
+      inputRef.current?.focus();
+    }
   }
-
-  function handleSubmit(e?: FormEvent) { e?.preventDefault(); sendMessage(input.trim()); }
-
-  const filteredHistory = history.filter(item => 
-    item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.date.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   if (!userRole) {
     return (
