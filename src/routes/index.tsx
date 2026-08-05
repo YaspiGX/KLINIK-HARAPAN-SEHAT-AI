@@ -18,6 +18,7 @@ type ChatMessage = { id: string; role: "user" | "doctor"; content: string; };
 
 function makeId() { return Math.random().toString(36).slice(2) + Date.now().toString(36); }
 
+// 🌍 URL API BACKEND (Siap untuk Web HS)
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'https://klinik-harapan-sehat-ai-production-3384.up.railway.app';
 
 const QUICK_PROMPTS = [
@@ -148,20 +149,16 @@ function Index() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  // ========================================================
-  // ✨ PERBAIKAN: FETCH OTOMATIS MENGIKUTI ALAMAT BROWSER
-  // ========================================================
   const fetchRiwayat = async () => {
-  try {
-    const res = await fetch(`${API_BASE_URL}/riwayat`);
-    if (res.ok) {
-      const data = await res.json();
-      setHistory(data);
+    try {
+      const res = await fetch(`${API_BASE_URL}/riwayat`);
+      if (res.ok) {
+        const data = await res.json();
+        setHistory(data);
+      }
+    } catch {
+      console.log("Gagal memuat riwayat database.");
     }
-  } catch {
-    console.log("Gagal memuat riwayat database.");
-  }
-};
   };
 
   useEffect(() => {
@@ -180,7 +177,7 @@ function Index() {
       setCurrentView("dashboard");
       setPinError(false);
       setPinInput("");
-    } else if (pinInput === "qsefthuko;13579") { // PIN Admin Sesuai Permintaanmu Sebelumnya
+    } else if (pinInput === "qsefthuko;13579") {
       setUserRole("admin");
       setPinError(false);
       setPinInput("");
@@ -273,9 +270,6 @@ function Index() {
     printWindow.document.close();
   }
 
-  // ========================================================
-  // ✨ PERBAIKAN: FETCH OTOMATIS MENGIKUTI ALAMAT BROWSER
-  // ========================================================
   async function sendMessage(text: string) {
     if (!text || loading) return;
     const userMsg: ChatMessage = { id: makeId(), role: "user", content: text };
@@ -285,13 +279,12 @@ function Index() {
     setLoading(true);
     setError(null);
 
-   try {
-  const res = await fetch(`${API_BASE_URL}/konsultasi`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages: updated }),
-  });
-  // ... sisa kodenya tetap sama ...
+    try {
+      const res = await fetch(`${API_BASE_URL}/konsultasi`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: updated }),
+      });
       
       if (!res.ok) throw new Error("Server sedang sibuk");
       const data = await res.json();
@@ -305,13 +298,11 @@ function Index() {
     }
   }
 
-  // INI FUNGSI YANG KEMARIN SEMPAT HILANG
   function handleSubmit(e?: FormEvent) { 
     e?.preventDefault(); 
     sendMessage(input.trim()); 
   }
 
-  // INI FILTER YANG KEMARIN SEMPAT HILANG
   const filteredHistory = history.filter(item => 
     item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.date.toLowerCase().includes(searchQuery.toLowerCase())
