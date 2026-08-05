@@ -23,6 +23,7 @@ def decrypt_data(text: str) -> str:
     except Exception:
         return text 
 
+
 # ==========================================
 # 🔑 API KEY GROQ
 # ==========================================
