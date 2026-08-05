@@ -3,3 +3,4 @@ uvicorn
 litellm
 cryptography
 pydantic
+groq
