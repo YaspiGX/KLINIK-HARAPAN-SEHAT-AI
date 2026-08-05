@@ -23,11 +23,12 @@ def decrypt_data(text: str) -> str:
     except Exception:
         return text 
 
-
 # ==========================================
-# 🔑 API KEY GROQ
+# 🔑 API KEY GROQ (FIX LITELLM RAILWAY)
 # ==========================================
 api_key = "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"
+# WAJIB tambahkan ini agar LiteLLM tidak crash di server Railway
+os.environ["GROQ_API_KEY"] = api_key 
 
 app = FastAPI()
 
@@ -160,7 +161,7 @@ async def handle_konsultasi_logic(request: Request, db_file: str, buku_file: str
 
         return {"pesan": pesan_ai}
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error AI: {e}")
         return {"pesan": "Maaf, sistem sedang sibuk. Silakan coba kirim ulang ya."}
 
 # ==========================================
@@ -285,11 +286,8 @@ def hapus_data_logic(db_file, item_id):
     except Exception as e:
         return {"error": str(e)}
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
 
-    # ==========================================
+# ==========================================
 # 📊 ENDPOINT DASHBOARD ADMIN (GABUNGAN SEMUA RUANGAN)
 # ==========================================
 @app.get("/riwayat/admin/semua")
@@ -352,6 +350,11 @@ async def admin_edit_data(db_target: str, item_id: int, data: EditData):
     target_db = DB_UMUM if db_target == "umum" else DB_GIGI
     return edit_data_logic(target_db, item_id, data)
 
+# ==========================================
+# 🚀 PUSAT SERVER (HANYA ADA SATU DI SINI)
+# ==========================================
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("api_klinik:app", host="0.0.0.0", port=8080)
+    # Membiarkan Railway menentukan Port sendiri, atau pakai 8000 kalau di laptop
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("api_klinik:app", host="0.0.0.0", port=port)
