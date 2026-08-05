@@ -186,6 +186,14 @@ async def edit_umum(item_id: int, data: EditData):
 async def hapus_umum(item_id: int):
     return hapus_data_logic(DB_UMUM, item_id)
 
+# Jalan pintas agar rute lama tetap bisa diakses
+@app.get("/riwayat")
+async def get_riwayat_alias():
+    return ambil_riwayat(DB_UMUM)
+
+@app.post("/konsultasi")
+async def konsultasi_alias(request: Request):
+    return await handle_konsultasi_logic(request, DB_UMUM, "buku_umum.txt", "Dokter Umum")
 
 # ==========================================
 # 🦷 ENDPOINT DOKTER GIGI (DATABASE & USER GIGI)
