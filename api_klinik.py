@@ -353,6 +353,22 @@ async def admin_edit_data(db_target: str, item_id: int, data: EditData):
     return edit_data_logic(target_db, item_id, data)
 
 # ==========================================
+# 🌐 GABUNGAN WEB & AI (SATU DOMAIN)
+# ==========================================
+# Cek apakah folder '.output/public' ada
+if os.path.isdir(".output/public"):
+    # Coba jalankan folder assets (tempat CSS/JS berada)
+    if os.path.isdir(".output/public/assets"):
+        app.mount("/assets", StaticFiles(directory=".output/public/assets"), name="assets")
+    elif os.path.isdir(".output/public/_ssr"): # Jaga-jaga kalau namanya beda
+        app.mount("/_ssr", StaticFiles(directory=".output/public/_ssr"), name="ssr")
+    
+    # Biarkan web React mengurus pindah-pindah halaman
+    @app.get("/{catchall:path}")
+    async def serve_react_app(catchall: str):
+        return FileResponse(".output/public/index.html")
+
+# ==========================================
 # 🚀 PUSAT SERVER (HANYA ADA SATU DI SINI)
 # ==========================================
 if __name__ == "__main__":
@@ -360,15 +376,3 @@ if __name__ == "__main__":
     # Membiarkan Railway menentukan Port sendiri, atau pakai 8000 kalau di laptop
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("api_klinik:app", host="0.0.0.0", port=port)
-
-    # ==========================================
-# 🌐 GABUNGAN WEB & AI (SATU DOMAIN)
-# ==========================================
-# Cek apakah folder 'dist' ada, lalu jadikan tampilan utama
-if os.path.isdir("dist"):
-    app.mount("/assets", StaticFiles(directory="dist/assets"), name="assets")
-    
-    # Biarkan web React mengurus pindah-pindah halaman
-    @app.get("/{catchall:path}")
-    async def serve_react_app(catchall: str):
-        return FileResponse("dist/index.html")
