@@ -18,9 +18,6 @@ type ChatMessage = { id: string; role: "user" | "doctor"; content: string; };
 
 function makeId() { return Math.random().toString(36).slice(2) + Date.now().toString(36); }
 
-// 🌍 URL API BACKEND (Siap untuk Web HS)
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'https://klinik-harapan-sehat-ai-production-3384.up.railway.app';
-
 const QUICK_PROMPTS = [
   "Saya demam dan pusing sejak kemarin",
   "Bagaimana pola makan sehat?",
@@ -151,7 +148,7 @@ function Index() {
 
   const fetchRiwayat = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/riwayat`);
+      const res = await fetch(`/riwayat`);
       if (res.ok) {
         const data = await res.json();
         setHistory(data);
@@ -280,8 +277,8 @@ function Index() {
     setError(null);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/konsultasi`, {
-        method: "POST",
+      const res = await fetch(`/konsultasi`, {
+  method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: updated }),
       });

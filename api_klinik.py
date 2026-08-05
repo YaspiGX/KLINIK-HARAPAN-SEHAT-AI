@@ -1,3 +1,5 @@
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from cryptography.fernet import Fernet
@@ -358,3 +360,15 @@ if __name__ == "__main__":
     # Membiarkan Railway menentukan Port sendiri, atau pakai 8000 kalau di laptop
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("api_klinik:app", host="0.0.0.0", port=port)
+
+    # ==========================================
+# 🌐 GABUNGAN WEB & AI (SATU DOMAIN)
+# ==========================================
+# Cek apakah folder 'dist' ada, lalu jadikan tampilan utama
+if os.path.isdir("dist"):
+    app.mount("/assets", StaticFiles(directory="dist/assets"), name="assets")
+    
+    # Biarkan web React mengurus pindah-pindah halaman
+    @app.get("/{catchall:path}")
+    async def serve_react_app(catchall: str):
+        return FileResponse("dist/index.html")
