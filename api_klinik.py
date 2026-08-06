@@ -200,6 +200,10 @@ async def get_riwayat_alias():
 async def konsultasi_alias(request: Request):
     return await handle_konsultasi_logic(request, DB_UMUM, "buku_umum.txt", "Dokter Umum")
 
+@app.get("/")
+async def root():
+    return {"status": "Server Klinik Harapan Sehat API Online! 🚀"}
+
 # ==========================================
 # 🦷 ENDPOINT DOKTER GIGI (DATABASE & USER GIGI)
 # ==========================================
