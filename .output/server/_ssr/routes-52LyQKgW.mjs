@@ -1,8 +1,8 @@
 import { r as __toESM } from "../_runtime.mjs";
 import { n as require_jsx_runtime, r as require_react } from "../_libs/react+tanstack__react-query.mjs";
-import { C as Activity, S as ArrowLeft, _ as Heart, a as ThumbsDown, b as CircleAlert, c as Sparkles, d as Send, f as Search, g as KeyRound, h as LoaderCircle, i as ThumbsUp, l as Settings, m as Lock, n as Users, o as Stethoscope, p as MessageSquare, r as UserRound, s as SquarePen, t as WandSparkles, u as Server, v as Download, x as ChevronRight, y as Database } from "../_libs/lucide-react.mjs";
+import { C as ChevronRight, S as CircleAlert, T as Activity, _ as KeyRound, a as ThumbsDown, b as Database, c as Sparkles, d as Server, f as Send, g as LoaderCircle, h as Lock, i as ThumbsUp, l as ShieldPlus, m as MessageSquare, n as Users, o as Stethoscope, p as Search, r as UserRound, s as SquarePen, t as WandSparkles, u as Settings, v as Heart, w as ArrowLeft, x as Clock, y as Download } from "../_libs/lucide-react.mjs";
 import { t as Markdown } from "../_libs/react-markdown+[...].mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-CN3Y6w77.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-52LyQKgW.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 function makeId() {
@@ -142,6 +142,7 @@ function TypingIndicator() {
 	});
 }
 function Index() {
+	const [isPublicLanding, setIsPublicLanding] = (0, import_react.useState)(true);
 	const [userRole, setUserRole] = (0, import_react.useState)(null);
 	const [pinInput, setPinInput] = (0, import_react.useState)("");
 	const [pinError, setPinError] = (0, import_react.useState)(false);
@@ -308,9 +309,150 @@ function Index() {
 		sendMessage(input.trim());
 	}
 	const filteredHistory = history.filter((item) => item.title.toLowerCase().includes(searchQuery.toLowerCase()) || item.date.toLowerCase().includes(searchQuery.toLowerCase()));
-	if (!userRole) return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-		className: "flex min-h-screen items-center justify-center bg-slate-900 px-4",
-		children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+	if (isPublicLanding) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "min-h-screen bg-slate-50 font-sans text-slate-800 animate-fade-in",
+		children: [
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("nav", {
+				className: "bg-white/90 backdrop-blur-md sticky top-0 z-40 border-b border-slate-100 shadow-sm",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "flex justify-between h-20 items-center",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex items-center gap-3",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "bg-teal-600 p-2.5 rounded-xl text-white shadow-md",
+									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Stethoscope, { className: "w-6 h-6" })
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+									className: "font-bold text-xl text-teal-800 leading-tight",
+									children: "Klinik Harapan Sehat"
+								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+									className: "text-[10px] font-semibold text-teal-600 tracking-wider uppercase",
+									children: "Melayani dengan Hati"
+								})] })]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "hidden md:flex gap-8 font-medium text-sm text-slate-600",
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+										href: "#",
+										className: "text-teal-600 font-bold",
+										children: "Beranda"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+										href: "#",
+										className: "hover:text-teal-600 transition",
+										children: "Layanan"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+										href: "#",
+										className: "hover:text-teal-600 transition",
+										children: "Jadwal Dokter"
+									})
+								]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+								onClick: () => setIsPublicLanding(false),
+								className: "bg-slate-800 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-900 transition shadow-lg flex items-center gap-2",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Lock, { className: "w-4 h-4" }), " Portal Pegawai"]
+							})
+						]
+					})
+				})
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", {
+				className: "relative bg-teal-900 overflow-hidden",
+				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "absolute inset-0 opacity-20",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "absolute top-0 right-0 -mr-20 -mt-20 w-[600px] h-[600px] rounded-full bg-teal-500 blur-3xl" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "absolute bottom-0 left-0 -ml-20 -mb-20 w-[400px] h-[400px] rounded-full bg-emerald-500 blur-3xl" })]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+					className: "relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 flex flex-col md:flex-row items-center",
+					children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "md:w-1/2 z-10",
+						children: [
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "inline-block py-1 px-3 rounded-full bg-teal-800/50 text-teal-200 text-xs font-bold tracking-wider mb-6 border border-teal-500/30",
+								children: "#1 KLINIK TERBAIK DI KOTA ANDA"
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("h2", {
+								className: "text-4xl md:text-5xl font-extrabold text-white leading-tight mb-6",
+								children: ["Kesehatan Keluarga Anda adalah ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+									className: "text-emerald-400",
+									children: "Prioritas Kami."
+								})]
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "text-teal-100 text-lg mb-8 max-w-lg leading-relaxed",
+								children: "Fasilitas medis modern dengan tim dokter spesialis berpengalaman. Kami hadir untuk memberikan perawatan komprehensif bagi Anda dan keluarga."
+							}),
+							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "flex gap-4",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+									className: "bg-emerald-500 text-white px-8 py-3.5 rounded-full font-bold hover:bg-emerald-400 transition shadow-lg flex items-center gap-2",
+									children: ["Daftar Online ", /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChevronRight, { className: "w-5 h-5" })]
+								})
+							})
+						]
+					})
+				})]
+			}),
+			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+				className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20 pb-20",
+				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+					className: "bg-white rounded-2xl shadow-xl border border-slate-100 p-8 grid grid-cols-1 md:grid-cols-3 gap-8",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-start gap-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "bg-teal-50 p-3 rounded-full text-teal-600",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Clock, { className: "w-6 h-6" })
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+								className: "font-bold text-slate-800",
+								children: "Buka 24 Jam"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "text-sm text-slate-500 mt-1",
+								children: "Layanan IGD dan Poli Umum siap sedia kapan pun Anda butuhkan."
+							})] })]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-start gap-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "bg-teal-50 p-3 rounded-full text-teal-600",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ShieldPlus, { className: "w-6 h-6" })
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+								className: "font-bold text-slate-800",
+								children: "Fasilitas Modern"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "text-sm text-slate-500 mt-1",
+								children: "Didukung alat rekam medis mutakhir berbasis Teknologi AI."
+							})] })]
+						}),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex items-start gap-4",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+								className: "bg-teal-50 p-3 rounded-full text-teal-600",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Users, { className: "w-6 h-6" })
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h4", {
+								className: "font-bold text-slate-800",
+								children: "Dokter Profesional"
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "text-sm text-slate-500 mt-1",
+								children: "Ditangani oleh tenaga medis bersertifikat dan berpengalaman."
+							})] })]
+						})
+					]
+				})
+			})
+		]
+	});
+	if (!userRole) return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+		className: "flex min-h-screen items-center justify-center bg-slate-900 px-4 relative",
+		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+			onClick: () => setIsPublicLanding(true),
+			className: "absolute top-6 left-6 text-slate-400 hover:text-white flex items-center gap-2 transition",
+			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ArrowLeft, { className: "w-5 h-5" }), " Kembali ke Web Publik"]
+		}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			className: "w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl animate-fade-in text-center relative overflow-hidden",
 			children: [
 				/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-teal-400 to-emerald-600" }),
@@ -368,7 +510,7 @@ function Index() {
 					})]
 				})
 			]
-		})
+		})]
 	});
 	if (userRole === "admin") return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: "flex min-h-screen bg-slate-900 text-slate-200 p-6",

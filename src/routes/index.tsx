@@ -5,7 +5,7 @@ import {
   Phone, MapPin, Mail, Heart, Activity, Sparkles, PlusCircle, Download,
   Wand2, Edit, ThumbsUp, ThumbsDown, AlertCircle, 
   Lock, KeyRound, ChevronRight, Menu, MessageSquare, Search, Home,
-  Server, Users, Database, Settings, ArrowLeft
+  Server, Users, Database, Settings, ArrowLeft, Clock, ShieldPlus
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
@@ -24,6 +24,9 @@ const QUICK_PROMPTS = [
   "Anak saya batuk pilek, apa yang harus dilakukan?",
 ];
 
+// ==========================================
+// KOMPONEN BANTUAN CHAT AI
+// ==========================================
 function Avatar({ role }: { role: "user" | "doctor" }) {
   const isDoctor = role === "doctor";
   return (
@@ -62,7 +65,6 @@ function MessageBubble({ message, onSend }: { message: ChatMessage, onSend: (tex
           </div>
         )}
         <div className={!isUser ? "pr-16" : ""}>
-          
           <ReactMarkdown components={{
               p: ({ node, ...props }) => <p className={`mb-3 last:mb-0 ${isUser ? "text-white" : "text-slate-800"}`} {...props} />,
               h3: ({ node, ...props }) => (
@@ -85,11 +87,7 @@ function MessageBubble({ message, onSend }: { message: ChatMessage, onSend: (tex
                   const cleanQ = q.replace(/^[\d\.\-\*]\s*/, '').replace(/\*\*/g, '').trim();
                   if (!cleanQ) return null;
                   return (
-                    <button 
-                      key={i} 
-                      onClick={() => onSend(cleanQ)} 
-                      className="text-left w-full rounded-xl border border-teal-200 bg-teal-50/40 px-4 py-3 text-sm font-medium text-slate-700 transition-all hover:bg-teal-100 hover:border-teal-400 hover:shadow-sm flex items-center justify-between group"
-                    >
+                    <button key={i} onClick={() => onSend(cleanQ)} className="text-left w-full rounded-xl border border-teal-200 bg-teal-50/40 px-4 py-3 text-sm font-medium text-slate-700 transition-all hover:bg-teal-100 hover:border-teal-400 hover:shadow-sm flex items-center justify-between group">
                       <span className="pr-4 leading-relaxed">{cleanQ}</span>
                       <div className="h-7 w-7 shrink-0 rounded-full bg-teal-200 text-teal-700 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <Send className="h-3.5 w-3.5" />
@@ -129,7 +127,14 @@ function TypingIndicator() {
   );
 }
 
+// ==========================================
+// APLIKASI UTAMA
+// ==========================================
 function Index() {
+  // STATE BARU: Untuk mengatur tampilan Pintu Depan (Landing Page)
+  const [isPublicLanding, setIsPublicLanding] = useState(true);
+
+  // STATE ASLI SISTEM KAMU (TIDAK ADA YANG DIHAPUS)
   const [userRole, setUserRole] = useState<"admin" | "doctor" | null>(null);
   const [pinInput, setPinInput] = useState("");
   const [pinError, setPinError] = useState(false);
@@ -278,7 +283,7 @@ function Index() {
 
     try {
       const res = await fetch(`/konsultasi`, {
-  method: "POST",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: updated }),
       });
@@ -305,9 +310,109 @@ function Index() {
     item.date.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // ==========================================
+  // RENDER 1: HALAMAN DEPAN PUBLIK (LANDING PAGE)
+  // ==========================================
+  if (isPublicLanding) {
+    return (
+      <div className="min-h-screen bg-slate-50 font-sans text-slate-800 animate-fade-in">
+        <nav className="bg-white/90 backdrop-blur-md sticky top-0 z-40 border-b border-slate-100 shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between h-20 items-center">
+              <div className="flex items-center gap-3">
+                <div className="bg-teal-600 p-2.5 rounded-xl text-white shadow-md">
+                  <Stethoscope className="w-6 h-6" />
+                </div>
+                <div>
+                  <h1 className="font-bold text-xl text-teal-800 leading-tight">Klinik Harapan Sehat</h1>
+                  <p className="text-[10px] font-semibold text-teal-600 tracking-wider uppercase">Melayani dengan Hati</p>
+                </div>
+              </div>
+              <div className="hidden md:flex gap-8 font-medium text-sm text-slate-600">
+                <a href="#" className="text-teal-600 font-bold">Beranda</a>
+                <a href="#" className="hover:text-teal-600 transition">Layanan</a>
+                <a href="#" className="hover:text-teal-600 transition">Jadwal Dokter</a>
+              </div>
+              {/* TOMBOL PINTU MASUK KE SISTEM ASLI KAMU */}
+              <button 
+                onClick={() => setIsPublicLanding(false)} 
+                className="bg-slate-800 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-900 transition shadow-lg flex items-center gap-2"
+              >
+                <Lock className="w-4 h-4" /> Portal Pegawai
+              </button>
+            </div>
+          </div>
+        </nav>
+
+        <header className="relative bg-teal-900 overflow-hidden">
+          <div className="absolute inset-0 opacity-20">
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[600px] h-[600px] rounded-full bg-teal-500 blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[400px] h-[400px] rounded-full bg-emerald-500 blur-3xl"></div>
+          </div>
+          
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 flex flex-col md:flex-row items-center">
+            <div className="md:w-1/2 z-10">
+              <span className="inline-block py-1 px-3 rounded-full bg-teal-800/50 text-teal-200 text-xs font-bold tracking-wider mb-6 border border-teal-500/30">
+                #1 KLINIK TERBAIK DI KOTA ANDA
+              </span>
+              <h2 className="text-4xl md:text-5xl font-extrabold text-white leading-tight mb-6">
+                Kesehatan Keluarga Anda adalah <span className="text-emerald-400">Prioritas Kami.</span>
+              </h2>
+              <p className="text-teal-100 text-lg mb-8 max-w-lg leading-relaxed">
+                Fasilitas medis modern dengan tim dokter spesialis berpengalaman. Kami hadir untuk memberikan perawatan komprehensif bagi Anda dan keluarga.
+              </p>
+              <div className="flex gap-4">
+                <button className="bg-emerald-500 text-white px-8 py-3.5 rounded-full font-bold hover:bg-emerald-400 transition shadow-lg flex items-center gap-2">
+                  Daftar Online <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20 pb-20">
+          <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="flex items-start gap-4">
+              <div className="bg-teal-50 p-3 rounded-full text-teal-600"><Clock className="w-6 h-6" /></div>
+              <div>
+                <h4 className="font-bold text-slate-800">Buka 24 Jam</h4>
+                <p className="text-sm text-slate-500 mt-1">Layanan IGD dan Poli Umum siap sedia kapan pun Anda butuhkan.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="bg-teal-50 p-3 rounded-full text-teal-600"><ShieldPlus className="w-6 h-6" /></div>
+              <div>
+                <h4 className="font-bold text-slate-800">Fasilitas Modern</h4>
+                <p className="text-sm text-slate-500 mt-1">Didukung alat rekam medis mutakhir berbasis Teknologi AI.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="bg-teal-50 p-3 rounded-full text-teal-600"><Users className="w-6 h-6" /></div>
+              <div>
+                <h4 className="font-bold text-slate-800">Dokter Profesional</h4>
+                <p className="text-sm text-slate-500 mt-1">Ditangani oleh tenaga medis bersertifikat dan berpengalaman.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ==========================================
+  // RENDER 2: HALAMAN LOGIN SISTEM (KODINGAN ASLIMU)
+  // ==========================================
   if (!userRole) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-900 px-4">
+      <div className="flex min-h-screen items-center justify-center bg-slate-900 px-4 relative">
+        {/* Tombol kembali ke Landing Page */}
+        <button 
+          onClick={() => setIsPublicLanding(true)}
+          className="absolute top-6 left-6 text-slate-400 hover:text-white flex items-center gap-2 transition"
+        >
+          <ArrowLeft className="w-5 h-5" /> Kembali ke Web Publik
+        </button>
+
         <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl animate-fade-in text-center relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-teal-400 to-emerald-600"></div>
           <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-slate-100 text-slate-700 shadow-inner">
@@ -342,6 +447,9 @@ function Index() {
     );
   }
 
+  // ==========================================
+  // RENDER 3: DASHBOARD ADMIN (KODINGAN ASLIMU)
+  // ==========================================
   if (userRole === "admin") {
     return (
       <div className="flex min-h-screen bg-slate-900 text-slate-200 p-6">
@@ -409,6 +517,9 @@ function Index() {
     );
   }
 
+  // ==========================================
+  // RENDER 4: DASHBOARD DOKTER UTAMA (KODINGAN ASLIMU)
+  // ==========================================
   if (userRole === "doctor" && currentView === "dashboard") {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-slate-900 p-6 relative overflow-hidden">
@@ -466,6 +577,9 @@ function Index() {
     );
   }
 
+  // ==========================================
+  // RENDER 5: ARSIP DATABASE (KODINGAN ASLIMU)
+  // ==========================================
   if (userRole === "doctor" && currentView === "archive") {
     return (
       <div className="flex flex-col h-screen w-screen bg-slate-50 overflow-hidden animate-fade-in">
@@ -529,6 +643,9 @@ function Index() {
     );
   }
 
+  // ==========================================
+  // RENDER 6: RUANG CHAT AI DOKTER (KODINGAN ASLIMU)
+  // ==========================================
   return (
     <div className="flex h-screen w-screen bg-slate-50 overflow-hidden">
       <div className="flex flex-1 flex-col h-full overflow-hidden bg-gradient-to-br from-teal-50 via-slate-50 to-emerald-50">
