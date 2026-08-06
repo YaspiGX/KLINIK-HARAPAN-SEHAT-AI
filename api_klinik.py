@@ -351,23 +351,65 @@ async def admin_hapus_data(db_target: str, item_id: int):
 async def admin_edit_data(db_target: str, item_id: int, data: EditData):
     target_db = DB_UMUM if db_target == "umum" else DB_GIGI
     return edit_data_logic(target_db, item_id, data)
+from fastapi.responses import HTMLResponse, FileResponse # Pastikan import ini ada di atas
+import os
+
+# ... (KODINGAN API DAN DATABASE KAMU DI ATAS BIARKAN SAJA) ...
 
 # ==========================================
-# 🌐 GABUNGAN WEB & AI (SATU DOMAIN)
+# 🌐 GABUNGAN WEB & AI (SATU DOMAIN) - JURUS HACKER
 # ==========================================
-# Cek apakah folder '.output/public' ada
 if os.path.isdir(".output/public"):
-    # Coba jalankan folder assets (tempat CSS/JS berada)
+    # Izinkan akses ke folder assets (tempat CSS & JS berada)
     if os.path.isdir(".output/public/assets"):
         app.mount("/assets", StaticFiles(directory=".output/public/assets"), name="assets")
-    elif os.path.isdir(".output/public/_ssr"): # Jaga-jaga kalau namanya beda
-        app.mount("/_ssr", StaticFiles(directory=".output/public/_ssr"), name="ssr")
     
-    # Biarkan web React mengurus pindah-pindah halaman
+    # Tangkap semua permintaan yang masuk
     @app.get("/{catchall:path}")
     async def serve_react_app(catchall: str):
-        return FileResponse(".output/public/index.html")
+        # 1. Cek apakah browser mencari file nyata (seperti favicon.ico)
+        file_path = os.path.join(".output/public", catchall)
+        if catchall and os.path.isfile(file_path):
+            return FileResponse(file_path)
+            
+        # 2. Jika bukan file, buatkan wujud HTML-nya secara dadakan!
+        assets_dir = ".output/public/assets"
+        js_tag = ""
+        css_tags = ""
+        
+        # Deteksi otomatis nama file JS dan CSS karena namanya sering berubah
+        if os.path.isdir(assets_dir):
+            for file in os.listdir(assets_dir):
+                if file.endswith(".js") and file.startswith("index"):
+                    js_tag = f'<script type="module" crossorigin src="/assets/{file}"></script>'
+                elif file.endswith(".css"):
+                    css_tags += f'<link rel="stylesheet" crossorigin href="/assets/{file}">\n'
+        
+        # Rakit kerangka web-nya
+        html_content = f"""
+        <!DOCTYPE html>
+        <html lang="id">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Klinik Harapan Sehat</title>
+            {css_tags}
+        </head>
+        <body>
+            <div id="root"></div>
+            {js_tag}
+        </body>
+        </html>
+        """
+        return HTMLResponse(content=html_content)
 
+# ==========================================
+# 🚀 PUSAT SERVER
+# ==========================================
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("api_klinik:app", host="0.0.0.0", port=port)
 # ==========================================
 # 🚀 PUSAT SERVER (HANYA ADA SATU DI SINI)
 # ==========================================
