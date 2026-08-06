@@ -1,5 +1,3 @@
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from cryptography.fernet import Fernet
@@ -34,9 +32,13 @@ os.environ["GROQ_API_KEY"] = api_key
 
 app = FastAPI()
 
+# ==========================================
+# 🌐 BUKA GERBANG CORS (UNTUK VERCEL)
+# ==========================================
 app.add_middleware(
     CORSMiddleware, 
     allow_origins=["*"], 
+    allow_credentials=True,
     allow_methods=["*"], 
     allow_headers=["*"]
 )
@@ -221,7 +223,6 @@ async def edit_gigi(item_id: int, data: EditData):
 async def hapus_gigi(item_id: int):
     return hapus_data_logic(DB_GIGI, item_id)
 
-
 # ==========================================
 # ⚙️ FUNGSI HELPER CRUD & RIWAYAT
 # ==========================================
@@ -288,7 +289,6 @@ def hapus_data_logic(db_file, item_id):
     except Exception as e:
         return {"error": str(e)}
 
-
 # ==========================================
 # 📊 ENDPOINT DASHBOARD ADMIN (GABUNGAN SEMUA RUANGAN)
 # ==========================================
@@ -306,7 +306,7 @@ async def get_semua_riwayat_admin():
             judul = f"Pasien: {decrypted_keluhan[:28]}..." if len(decrypted_keluhan) > 28 else f"Pasien: {decrypted_keluhan}"
             semua_data.append({
                 "id": r[0],
-                "db_target": "umum", # Penanda database asal
+                "db_target": "umum", 
                 "ruangan": "Dokter Umum",
                 "badge": "🩺",
                 "title": judul,
@@ -326,7 +326,7 @@ async def get_semua_riwayat_admin():
             judul = f"Pasien: {decrypted_keluhan[:28]}..." if len(decrypted_keluhan) > 28 else f"Pasien: {decrypted_keluhan}"
             semua_data.append({
                 "id": r[0],
-                "db_target": "gigi", # Penanda database asal
+                "db_target": "gigi", 
                 "ruangan": "Dokter Gigi",
                 "badge": "🦷",
                 "title": judul,
@@ -336,85 +336,23 @@ async def get_semua_riwayat_admin():
     except Exception as e:
         print(f"Error baca DB Gigi: {e}")
 
-    # 3. Urutkan berdasarkan waktu terbaru dari semua ruangan
     semua_data.sort(key=lambda x: x["date"], reverse=True)
     return semua_data
 
-# Endpoint Admin untuk Hapus data berdasarkan asalnya
 @app.delete("/riwayat/admin/{db_target}/{item_id}")
 async def admin_hapus_data(db_target: str, item_id: int):
     target_db = DB_UMUM if db_target == "umum" else DB_GIGI
     return hapus_data_logic(target_db, item_id)
 
-# Endpoint Admin untuk Edit data berdasarkan asalnya
 @app.put("/riwayat/admin/{db_target}/{item_id}")
 async def admin_edit_data(db_target: str, item_id: int, data: EditData):
     target_db = DB_UMUM if db_target == "umum" else DB_GIGI
     return edit_data_logic(target_db, item_id, data)
-from fastapi.responses import HTMLResponse, FileResponse # Pastikan import ini ada di atas
-import os
-
-# ... (KODINGAN API DAN DATABASE KAMU DI ATAS BIARKAN SAJA) ...
 
 # ==========================================
-# 🌐 GABUNGAN WEB & AI (SATU DOMAIN) - JURUS HACKER
-# ==========================================
-if os.path.isdir(".output/public"):
-    # Izinkan akses ke folder assets (tempat CSS & JS berada)
-    if os.path.isdir(".output/public/assets"):
-        app.mount("/assets", StaticFiles(directory=".output/public/assets"), name="assets")
-    
-    # Tangkap semua permintaan yang masuk
-    @app.get("/{catchall:path}")
-    async def serve_react_app(catchall: str):
-        # 1. Cek apakah browser mencari file nyata (seperti favicon.ico)
-        file_path = os.path.join(".output/public", catchall)
-        if catchall and os.path.isfile(file_path):
-            return FileResponse(file_path)
-            
-        # 2. Jika bukan file, buatkan wujud HTML-nya secara dadakan!
-        assets_dir = ".output/public/assets"
-        js_tag = ""
-        css_tags = ""
-        
-        # Deteksi otomatis nama file JS dan CSS karena namanya sering berubah
-        if os.path.isdir(assets_dir):
-            for file in os.listdir(assets_dir):
-                if file.endswith(".js") and file.startswith("index"):
-                    js_tag = f'<script type="module" crossorigin src="/assets/{file}"></script>'
-                elif file.endswith(".css"):
-                    css_tags += f'<link rel="stylesheet" crossorigin href="/assets/{file}">\n'
-        
-        # Rakit kerangka web-nya
-        html_content = f"""
-        <!DOCTYPE html>
-        <html lang="id">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Klinik Harapan Sehat</title>
-            {css_tags}
-        </head>
-        <body>
-            <div id="root"></div>
-            {js_tag}
-        </body>
-        </html>
-        """
-        return HTMLResponse(content=html_content)
-
-# ==========================================
-# 🚀 PUSAT SERVER
+# 🚀 PUSAT SERVER API 
 # ==========================================
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("api_klinik:app", host="0.0.0.0", port=port)
-# ==========================================
-# 🚀 PUSAT SERVER (HANYA ADA SATU DI SINI)
-# ==========================================
-if __name__ == "__main__":
-    import uvicorn
-    # Membiarkan Railway menentukan Port sendiri, atau pakai 8000 kalau di laptop
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("api_klinik:app", host="0.0.0.0", port=port)
