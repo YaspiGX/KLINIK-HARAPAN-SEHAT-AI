@@ -282,7 +282,7 @@ function Index() {
     setError(null);
 
     try {
-      const res = await fetch(`/konsultasi`, {
+     const res = await fetch("https://klinik-harapan-sehat-ai-production-3384.up.railway.app/konsultasi", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: updated }),
