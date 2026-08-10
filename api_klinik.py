@@ -87,14 +87,13 @@ class EditData(BaseModel):
     jawaban_ai: str
 
 # ==========================================
-# 🧠 LOGIK AI GEMINI (TIDAK AKAN NYASAR KE PRO)
+# 🧠 LOGIK AI GEMINI (DENGAN DEBUG TRANSPARAN)
 # ==========================================
 async def handle_konsultasi_logic(request: Request, db_file: str, buku_file: str, role_title: str):
     try:
         data = await request.json()
         raw_messages = data.get("messages", []) 
         
-        # Format riwayat chat untuk Gemini API murni
         gemini_messages = []
         for msg in raw_messages:
             role = "model" if msg["role"] == "doctor" else "user"
@@ -154,7 +153,6 @@ async def handle_konsultasi_logic(request: Request, db_file: str, buku_file: str
         
         pesan_pasien = raw_messages[-1]["content"] if raw_messages else "Pesan kosong"
         
-        # Enkripsi & Simpan ke Database
         encrypted_pasien = encrypt_data(pesan_pasien)
         encrypted_ai = encrypt_data(pesan_ai)
         
@@ -167,8 +165,9 @@ async def handle_konsultasi_logic(request: Request, db_file: str, buku_file: str
 
         return {"pesan": pesan_ai}
     except Exception as e:
-        print(f"Error AI: {e}")
-        return {"pesan": "Maaf, sistem sedang sibuk. Silakan coba kirim ulang ya."}
+        error_msg = str(e)
+        print(f"Error AI Detail: {error_msg}")
+        return {"pesan": f"⚠️ DEBUG ERROR AI: {error_msg}"}
 
 # ==========================================
 # 🩺 ENDPOINT RUTING UTAMA
