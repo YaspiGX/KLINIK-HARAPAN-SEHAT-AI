@@ -26,7 +26,7 @@ def decrypt_data(text: str) -> str:
 # ==========================================
 # 🔑 API KEY GEMINI (GANTI DENGAN KUNCI KAMU)
 # ==========================================
-api_key = "MASUKKAN_API_KEY_GEMINI_KAMU_DI_SINI"
+api_key = "AQ.Ab8RN6Kgmbt5iVvfw-nsr0FGuvXhxHEgl7vvnerjV88YN_HiEQ"
 genai.configure(api_key=api_key)
 
 app = FastAPI()
