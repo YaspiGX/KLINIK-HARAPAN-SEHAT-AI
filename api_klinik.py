@@ -2,7 +2,8 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from cryptography.fernet import Fernet
 from pydantic import BaseModel
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 import sqlite3
 import os
 
@@ -24,15 +25,15 @@ def decrypt_data(text: str) -> str:
         return text 
 
 # ==========================================
-# 🔑 API KEY GEMINI (Aman pakai Environment Variable)
+# 🔑 INISIALISASI CLIENT GEMINI TERBARU
 # ==========================================
-api_key = os.environ.get("GEMINI_API_KEY")
-genai.configure(api_key=api_key)
+api_key = "AQ.Ab8RN6Kgmbt5iVvfw-nsr0FGuvXhxHEgl7vvnerjV88YN_HiEQ"
+client = genai.Client(api_key=api_key)
 
 app = FastAPI()
 
 # ==========================================
-# 🌐 BUKA GERBANG CORS (Untuk Akses dari Web Lain)
+# 🌐 BUKA GERBANG CORS
 # ==========================================
 app.add_middleware(
     CORSMiddleware, 
@@ -43,7 +44,7 @@ app.add_middleware(
 )
 
 # ==========================================
-# 🗄️ INISIALISASI 2 DATABASE TERPISAH
+# 🗄️ INISIALISASI DATABASE
 # ==========================================
 DB_UMUM = 'klinik_umum.db'
 DB_GIGI = 'klinik_gigi.db'
@@ -87,7 +88,7 @@ class EditData(BaseModel):
     jawaban_ai: str
 
 # ==========================================
-# 🧠 LOGIK AI GEMINI (DENGAN DEBUG TRANSPARAN)
+# 🧠 LOGIK AI GEMINI (SDK GOOGLE-GENAI TERBARU)
 # ==========================================
 async def handle_konsultasi_logic(request: Request, db_file: str, buku_file: str, role_title: str):
     try:
@@ -96,8 +97,8 @@ async def handle_konsultasi_logic(request: Request, db_file: str, buku_file: str
         
         gemini_messages = []
         for msg in raw_messages:
-            role = "model" if msg["role"] == "doctor" else "user"
-            gemini_messages.append({"role": role, "parts": [msg["content"]]})
+            role = "user" if msg["role"] == "user" else "model"
+            gemini_messages.append({"role": role, "parts": [{"text": msg["content"]}]})
             
         referensi_klinik = baca_buku_medis(buku_file)
 
@@ -106,11 +107,13 @@ async def handle_konsultasi_logic(request: Request, db_file: str, buku_file: str
         PEDOMAN: {referensi_klinik}
         TUGASMU: Analisis gejala pasien HANYA berdasarkan Buku Pedoman di atas. Jangan jawab pasien sekarang, tuliskan analisis internalmu."""
         
-        thought_model = genai.GenerativeModel(
-            model_name='gemini-1.5-flash',
-            system_instruction=thought_instruction
+        thought_response = client.models.generate_content(
+            model='gemini-2.0-flash',
+            contents=gemini_messages,
+            config=types.GenerateContentConfig(
+                system_instruction=thought_instruction
+            )
         )
-        thought_response = thought_model.generate_content(gemini_messages)
         thought = thought_response.text
 
         # --- 2. Tahap Pembuatan Jawaban Final ---
@@ -144,11 +147,13 @@ async def handle_konsultasi_logic(request: Request, db_file: str, buku_file: str
         Di bagian akhir, gunakan format kotak peringatan:
         ⚠️ **REKOMENDASI MEDIS:** [Saran tindakan medis darurat atau rujukan spesialis. AMBIL DARI BUKU PEDOMAN JIKA ADA]."""
         
-        final_model = genai.GenerativeModel(
-            model_name='gemini-1.5-flash',
-            system_instruction=final_instruction
+        final_response = client.models.generate_content(
+            model='gemini-2.0-flash',
+            contents=gemini_messages,
+            config=types.GenerateContentConfig(
+                system_instruction=final_instruction
+            )
         )
-        final_response = final_model.generate_content(gemini_messages)
         pesan_ai = final_response.text
         
         pesan_pasien = raw_messages[-1]["content"] if raw_messages else "Pesan kosong"
