@@ -27,7 +27,7 @@ def decrypt_data(text: str) -> str:
 # ==========================================
 # 🔑 INISIALISASI CLIENT GEMINI TERBARU
 # ==========================================
-api_key = "AQ.Ab8RN6Kgmbt5iVvfw-nsr0FGuvXhxHEgl7vvnerjV88YN_HiEQ"
+api_key = "AQ.Ab8RN6IP_16A6y0Pzk8M1lEzqVAFbEBHMQDD5l1D_9ZrkMpCFg"
 client = genai.Client(api_key=api_key)
 
 app = FastAPI()
