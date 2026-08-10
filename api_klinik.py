@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from cryptography.fernet import Fernet
 from pydantic import BaseModel
-import litellm
+import google.generativeai as genai
 import sqlite3
 import os
 
@@ -24,16 +24,15 @@ def decrypt_data(text: str) -> str:
         return text 
 
 # ==========================================
-# 🔑 API KEY GROQ (FIX LITELLM RAILWAY)
+# 🔑 API KEY GEMINI (Resmi dari Google)
 # ==========================================
-api_key = "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"
-# WAJIB tambahkan ini agar LiteLLM tidak crash di server Railway
-os.environ["GROQ_API_KEY"] = api_key 
+api_key = "APA IYAH INI TEH"
+genai.configure(api_key=api_key)
 
 app = FastAPI()
 
 # ==========================================
-# 🌐 BUKA GERBANG CORS (UNTUK VERCEL)
+# 🌐 BUKA GERBANG CORS (Untuk Lokal)
 # ==========================================
 app.add_middleware(
     CORSMiddleware, 
@@ -87,72 +86,75 @@ class EditData(BaseModel):
     keluhan_pasien: str
     jawaban_ai: str
 
-# Helper Utama untuk Proses AI & Enkripsi
+# ==========================================
+# 🧠 LOGIK AI GEMINI (TIDAK AKAN NYASAR KE PRO)
+# ==========================================
 async def handle_konsultasi_logic(request: Request, db_file: str, buku_file: str, role_title: str):
     try:
         data = await request.json()
         raw_messages = data.get("messages", []) 
-        clean_messages = [{"role": "assistant" if msg["role"] == "doctor" else "user", "content": msg["content"]} for msg in raw_messages]
+        
+        # Format riwayat chat untuk Gemini API murni
+        gemini_messages = []
+        for msg in raw_messages:
+            role = "model" if msg["role"] == "doctor" else "user"
+            gemini_messages.append({"role": role, "parts": [msg["content"]]})
+            
         referensi_klinik = baca_buku_medis(buku_file)
 
-        thought_prompt = {
-            "role": "system",
-            "content": f"""Kamu adalah asisten medis spesialis {role_title} di Klinik Harapan Sehat.
-            PEDOMAN: {referensi_klinik}
-            TUGASMU: Analisis gejala pasien HANYA berdasarkan Buku Pedoman di atas. Jangan jawab pasien sekarang, tuliskan analisis internalmu."""
-        }
+        # --- 1. Tahap Berpikir (Thought Process) ---
+        thought_instruction = f"""Kamu adalah asisten medis spesialis {role_title} di Klinik Harapan Sehat.
+        PEDOMAN: {referensi_klinik}
+        TUGASMU: Analisis gejala pasien HANYA berdasarkan Buku Pedoman di atas. Jangan jawab pasien sekarang, tuliskan analisis internalmu."""
         
-        thought_response = litellm.completion(
-            model="groq/llama-3.3-70b-versatile",
-            messages=[thought_prompt] + clean_messages,
-            api_key=api_key
+        thought_model = genai.GenerativeModel(
+            model_name='gemini-1.5-flash',
+            system_instruction=thought_instruction
         )
-        thought = thought_response.choices[0].message.content
+        thought_response = thought_model.generate_content(gemini_messages)
+        thought = thought_response.text
 
-        final_prompt = {
-            "role": "system",
-            "content": f"""Kamu adalah mesin diagnosis {role_title} cerdas ala DxGPT.
-            
-            Ini adalah hasil analisis internalmu: {thought}.
-            
-            INSTRUKSI FORMATTING (WAJIB DIIKUTI SUPAYA TAMPILANNYA SAMA PERSIS DXGPT):
-            Berikan 3 kemungkinan diagnosis teratas dengan format persis seperti ini untuk setiap nomor:
-
-            ### 1. [Nama Penyakit Utama]
-            [Deskripsi singkat mengenai penyakit tersebut]
-            - **Matching symptoms:** [Sebutkan gejala pasien yang cocok dengan penyakit ini]
-            - **Non-matching symptoms:** [Sebutkan gejala atau kondisi pasien yang tidak ada/tidak cocok, atau tulis 'None']
-
-            ### 2. [Nama Penyakit Banding Pertama]
-            [Deskripsi singkat]
-            - **Matching symptoms:** [...]
-            - **Non-matching symptoms:** [...]
-
-            ### 3. [Nama Penyakit Banding Kedua]
-            [Deskripsi singkat]
-            - **Matching symptoms:** [...]
-            - **Non-matching symptoms:** [...]
-
-            Di bagian paling bawah, berikan tombol pertanyaan lanjutan dengan format persis ini:
-            PERTANYAAN LANJUTAN UNTUK MEMASTIKAN:
-            a. [Pertanyaan pertama]
-            b. [Pertanyaan kedua]
-            c. [Pertanyaan ketiga]
-
-            Di bagian akhir, gunakan format kotak peringatan:
-            ⚠️ **REKOMENDASI MEDIS:** [Saran tindakan medis darurat atau rujukan spesialis. AMBIL DARI BUKU PEDOMAN JIKA ADA]."""
-        }
+        # --- 2. Tahap Pembuatan Jawaban Final ---
+        final_instruction = f"""Kamu adalah mesin diagnosis {role_title} cerdas ala DxGPT.
+        Ini adalah hasil analisis internalmu: {thought}.
         
-        final_response = litellm.completion(
-            model="groq/llama-3.3-70b-versatile",
-            messages=[final_prompt] + clean_messages,
-            api_key=api_key
+        INSTRUKSI FORMATTING (WAJIB DIIKUTI SUPAYA TAMPILANNYA SAMA PERSIS DXGPT):
+        Berikan 3 kemungkinan diagnosis teratas dengan format persis seperti ini untuk setiap nomor:
+
+        ### 1. [Nama Penyakit Utama]
+        [Deskripsi singkat mengenai penyakit tersebut]
+        - **Matching symptoms:** [Sebutkan gejala pasien yang cocok dengan penyakit ini]
+        - **Non-matching symptoms:** [Sebutkan gejala atau kondisi pasien yang tidak ada/tidak cocok, atau tulis 'None']
+
+        ### 2. [Nama Penyakit Banding Pertama]
+        [Deskripsi singkat]
+        - **Matching symptoms:** [...]
+        - **Non-matching symptoms:** [...]
+
+        ### 3. [Nama Penyakit Banding Kedua]
+        [Deskripsi singkat]
+        - **Matching symptoms:** [...]
+        - **Non-matching symptoms:** [...]
+
+        Di bagian paling bawah, berikan tombol pertanyaan lanjutan dengan format persis ini:
+        PERTANYAAN LANJUTAN UNTUK MEMASTIKAN:
+        a. [Pertanyaan pertama]
+        b. [Pertanyaan kedua]
+        c. [Pertanyaan ketiga]
+
+        Di bagian akhir, gunakan format kotak peringatan:
+        ⚠️ **REKOMENDASI MEDIS:** [Saran tindakan medis darurat atau rujukan spesialis. AMBIL DARI BUKU PEDOMAN JIKA ADA]."""
+        
+        final_model = genai.GenerativeModel(
+            model_name='gemini-1.5-flash',
+            system_instruction=final_instruction
         )
+        final_response = final_model.generate_content(gemini_messages)
+        pesan_ai = final_response.text
         
-        pesan_pasien = clean_messages[-1]["content"] if clean_messages else "Pesan kosong"
-        pesan_ai = final_response.choices[0].message.content
+        pesan_pasien = raw_messages[-1]["content"] if raw_messages else "Pesan kosong"
         
-        # Enkripsi & Simpan ke Database Spesifik
+        # Enkripsi & Simpan ke Database
         encrypted_pasien = encrypt_data(pesan_pasien)
         encrypted_ai = encrypt_data(pesan_ai)
         
@@ -169,7 +171,7 @@ async def handle_konsultasi_logic(request: Request, db_file: str, buku_file: str
         return {"pesan": "Maaf, sistem sedang sibuk. Silakan coba kirim ulang ya."}
 
 # ==========================================
-# 🩺 ENDPOINT DOKTER UMUM (DATABASE & USER UMUM)
+# 🩺 ENDPOINT RUTING
 # ==========================================
 @app.post("/konsultasi/umum")
 async def konsultasi_umum(request: Request):
@@ -191,7 +193,6 @@ async def edit_umum(item_id: int, data: EditData):
 async def hapus_umum(item_id: int):
     return hapus_data_logic(DB_UMUM, item_id)
 
-# Jalan pintas agar rute lama tetap bisa diakses
 @app.get("/riwayat")
 async def get_riwayat_alias():
     return ambil_riwayat(DB_UMUM)
@@ -204,9 +205,6 @@ async def konsultasi_alias(request: Request):
 async def root():
     return {"status": "Server Klinik Harapan Sehat API Online! 🚀"}
 
-# ==========================================
-# 🦷 ENDPOINT DOKTER GIGI (DATABASE & USER GIGI)
-# ==========================================
 @app.post("/konsultasi/gigi")
 async def konsultasi_gigi(request: Request):
     return await handle_konsultasi_logic(request, DB_GIGI, "buku_gigi.txt", "Dokter Gigi")
@@ -227,9 +225,6 @@ async def edit_gigi(item_id: int, data: EditData):
 async def hapus_gigi(item_id: int):
     return hapus_data_logic(DB_GIGI, item_id)
 
-# ==========================================
-# ⚙️ FUNGSI HELPER CRUD & RIWAYAT
-# ==========================================
 def ambil_riwayat(db_file):
     try:
         conn = sqlite3.connect(db_file, check_same_thread=False)
@@ -237,7 +232,6 @@ def ambil_riwayat(db_file):
         cursor.execute("SELECT id, keluhan_pasien, created_at FROM riwayat_chat ORDER BY id DESC LIMIT 20")
         rows = cursor.fetchall()
         conn.close()
-        
         result = []
         for r in rows:
             decrypted_keluhan = decrypt_data(str(r[1]) if r[1] else "Pasien Baru")
@@ -293,14 +287,9 @@ def hapus_data_logic(db_file, item_id):
     except Exception as e:
         return {"error": str(e)}
 
-# ==========================================
-# 📊 ENDPOINT DASHBOARD ADMIN (GABUNGAN SEMUA RUANGAN)
-# ==========================================
 @app.get("/riwayat/admin/semua")
 async def get_semua_riwayat_admin():
     semua_data = []
-    
-    # 1. Tarik data dari Database Dokter Umum
     try:
         conn = sqlite3.connect(DB_UMUM, check_same_thread=False)
         cursor = conn.cursor()
@@ -308,19 +297,10 @@ async def get_semua_riwayat_admin():
         for r in cursor.fetchall():
             decrypted_keluhan = decrypt_data(str(r[1]) if r[1] else "Pasien Baru")
             judul = f"Pasien: {decrypted_keluhan[:28]}..." if len(decrypted_keluhan) > 28 else f"Pasien: {decrypted_keluhan}"
-            semua_data.append({
-                "id": r[0],
-                "db_target": "umum", 
-                "ruangan": "Dokter Umum",
-                "badge": "🩺",
-                "title": judul,
-                "date": str(r[2])[:16] if r[2] else ""
-            })
+            semua_data.append({"id": r[0], "db_target": "umum", "ruangan": "Dokter Umum", "badge": "🩺", "title": judul, "date": str(r[2])[:16] if r[2] else ""})
         conn.close()
     except Exception as e:
-        print(f"Error baca DB Umum: {e}")
-
-    # 2. Tarik data dari Database Dokter Gigi
+        pass
     try:
         conn = sqlite3.connect(DB_GIGI, check_same_thread=False)
         cursor = conn.cursor()
@@ -328,18 +308,10 @@ async def get_semua_riwayat_admin():
         for r in cursor.fetchall():
             decrypted_keluhan = decrypt_data(str(r[1]) if r[1] else "Pasien Baru")
             judul = f"Pasien: {decrypted_keluhan[:28]}..." if len(decrypted_keluhan) > 28 else f"Pasien: {decrypted_keluhan}"
-            semua_data.append({
-                "id": r[0],
-                "db_target": "gigi", 
-                "ruangan": "Dokter Gigi",
-                "badge": "🦷",
-                "title": judul,
-                "date": str(r[2])[:16] if r[2] else ""
-            })
+            semua_data.append({"id": r[0], "db_target": "gigi", "ruangan": "Dokter Gigi", "badge": "🦷", "title": judul, "date": str(r[2])[:16] if r[2] else ""})
         conn.close()
     except Exception as e:
-        print(f"Error baca DB Gigi: {e}")
-
+        pass
     semua_data.sort(key=lambda x: x["date"], reverse=True)
     return semua_data
 
@@ -353,9 +325,6 @@ async def admin_edit_data(db_target: str, item_id: int, data: EditData):
     target_db = DB_UMUM if db_target == "umum" else DB_GIGI
     return edit_data_logic(target_db, item_id, data)
 
-# ==========================================
-# 🚀 PUSAT SERVER API 
-# ==========================================
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
