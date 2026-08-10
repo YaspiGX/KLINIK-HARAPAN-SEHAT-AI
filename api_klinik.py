@@ -88,7 +88,7 @@ class EditData(BaseModel):
     jawaban_ai: str
 
 # ==========================================
-# 🧠 LOGIK AI GEMINI (SDK GOOGLE-GENAI TERBARU)
+# 🧠 LOGIK AI HEMAT KUOTA (1 KALI PANGGIL)
 # ==========================================
 async def handle_konsultasi_logic(request: Request, db_file: str, buku_file: str, role_title: str):
     try:
@@ -102,31 +102,16 @@ async def handle_konsultasi_logic(request: Request, db_file: str, buku_file: str
             
         referensi_klinik = baca_buku_medis(buku_file)
 
-        # --- 1. Tahap Berpikir (Thought Process) ---
-        thought_instruction = f"""Kamu adalah asisten medis spesialis {role_title} di Klinik Harapan Sehat.
-        PEDOMAN: {referensi_klinik}
-        TUGASMU: Analisis gejala pasien HANYA berdasarkan Buku Pedoman di atas. Jangan jawab pasien sekarang, tuliskan analisis internalmu."""
+        # Instruksi digabung jadi satu agar hemat kuota API dan tidak kena error 429
+        system_instruction = f"""Kamu adalah asisten medis spesialis {role_title} cerdas ala DxGPT di Klinik Harapan Sehat.
+        PEDOMAN MEDIS: {referensi_klinik}
         
-        thought_response = client.models.generate_content(
-            model='gemini-2.0-flash',
-            contents=gemini_messages,
-            config=types.GenerateContentConfig(
-                system_instruction=thought_instruction
-            )
-        )
-        thought = thought_response.text
-
-        # --- 2. Tahap Pembuatan Jawaban Final ---
-        final_instruction = f"""Kamu adalah mesin diagnosis {role_title} cerdas ala DxGPT.
-        Ini adalah hasil analisis internalmu: {thought}.
-        
-        INSTRUKSI FORMATTING (WAJIB DIIKUTI SUPAYA TAMPILANNYA SAMA PERSIS DXGPT):
-        Berikan 3 kemungkinan diagnosis teratas dengan format persis seperti ini untuk setiap nomor:
+        TUGASMU: Analisis gejala pasien berdasarkan buku pedoman di atas dan berikan respons dengan format persis seperti ini:
 
         ### 1. [Nama Penyakit Utama]
         [Deskripsi singkat mengenai penyakit tersebut]
         - **Matching symptoms:** [Sebutkan gejala pasien yang cocok dengan penyakit ini]
-        - **Non-matching symptoms:** [Sebutkan gejala atau kondisi pasien yang tidak ada/tidak cocok, atau tulis 'None']
+        - **Non-matching symptoms:** [Sebutkan gejala atau kondisi pasien yang tidak cocok, atau tulis 'None']
 
         ### 2. [Nama Penyakit Banding Pertama]
         [Deskripsi singkat]
@@ -138,23 +123,21 @@ async def handle_konsultasi_logic(request: Request, db_file: str, buku_file: str
         - **Matching symptoms:** [...]
         - **Non-matching symptoms:** [...]
 
-        Di bagian paling bawah, berikan tombol pertanyaan lanjutan dengan format persis ini:
         PERTANYAAN LANJUTAN UNTUK MEMASTIKAN:
         a. [Pertanyaan pertama]
         b. [Pertanyaan kedua]
         c. [Pertanyaan ketiga]
 
-        Di bagian akhir, gunakan format kotak peringatan:
-        ⚠️ **REKOMENDASI MEDIS:** [Saran tindakan medis darurat atau rujukan spesialis. AMBIL DARI BUKU PEDOMAN JIKA ADA]."""
+        ⚠️ **REKOMENDASI MEDIS:** [Saran tindakan medis darurat atau rujukan spesialis berdasarkan buku pedoman]."""
         
-        final_response = client.models.generate_content(
+        response = client.models.generate_content(
             model='gemini-2.0-flash',
             contents=gemini_messages,
             config=types.GenerateContentConfig(
-                system_instruction=final_instruction
+                system_instruction=system_instruction
             )
         )
-        pesan_ai = final_response.text
+        pesan_ai = response.text
         
         pesan_pasien = raw_messages[-1]["content"] if raw_messages else "Pesan kosong"
         
