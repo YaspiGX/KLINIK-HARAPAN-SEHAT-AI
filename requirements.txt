@@ -1,6 +1,5 @@
 fastapi
 uvicorn
-litellm
 cryptography
 pydantic
-groq
+google-generativeai
