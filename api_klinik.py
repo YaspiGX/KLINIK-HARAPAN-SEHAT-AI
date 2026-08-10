@@ -2,8 +2,6 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from cryptography.fernet import Fernet
 from pydantic import BaseModel
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
 import google.generativeai as genai
 import sqlite3
 import os
@@ -26,15 +24,15 @@ def decrypt_data(text: str) -> str:
         return text 
 
 # ==========================================
-# 🔑 API KEY GEMINI (Resmi dari Google)
+# 🔑 API KEY GEMINI (Aman pakai Environment Variable)
 # ==========================================
-api_key = "APA IYAH INI TEH"
+api_key = os.environ.get("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
 
 app = FastAPI()
 
 # ==========================================
-# 🌐 BUKA GERBANG CORS (Untuk Lokal)
+# 🌐 BUKA GERBANG CORS (Untuk Akses dari Web Lain)
 # ==========================================
 app.add_middleware(
     CORSMiddleware, 
@@ -173,8 +171,12 @@ async def handle_konsultasi_logic(request: Request, db_file: str, buku_file: str
         return {"pesan": "Maaf, sistem sedang sibuk. Silakan coba kirim ulang ya."}
 
 # ==========================================
-# 🩺 ENDPOINT RUTING
+# 🩺 ENDPOINT RUTING UTAMA
 # ==========================================
+@app.get("/")
+async def root():
+    return {"status": "Server Klinik Harapan Sehat API Online! 🚀"}
+
 @app.post("/konsultasi/umum")
 async def konsultasi_umum(request: Request):
     return await handle_konsultasi_logic(request, DB_UMUM, "buku_umum.txt", "Dokter Umum")
@@ -303,7 +305,7 @@ async def get_semua_riwayat_admin():
         conn = sqlite3.connect(DB_GIGI, check_same_thread=False)
         cursor = conn.cursor()
         cursor.execute("SELECT id, keluhan_pasien, created_at FROM riwayat_chat ORDER BY id DESC")
-        for r in cursor.fetchall():
+        for r infetchall():
             decrypted_keluhan = decrypt_data(str(r[1]) if r[1] else "Pasien Baru")
             judul = f"Pasien: {decrypted_keluhan[:28]}..." if len(decrypted_keluhan) > 28 else f"Pasien: {decrypted_keluhan}"
             semua_data.append({"id": r[0], "db_target": "gigi", "ruangan": "Dokter Gigi", "badge": "🦷", "title": judul, "date": str(r[2])[:16] if r[2] else ""})
@@ -322,24 +324,6 @@ async def admin_hapus_data(db_target: str, item_id: int):
 async def admin_edit_data(db_target: str, item_id: int, data: EditData):
     target_db = DB_UMUM if db_target == "umum" else DB_GIGI
     return edit_data_logic(target_db, item_id, data)
-
-# ==========================================
-# 🌐 MENAMPILKAN WEB FRONTEND DI RAILWAY
-# ==========================================
-# Kita suruh Python membaca folder .output/public hasil build kamu
-if os.path.exists(".output/public"):
-    @app.get("/{catchall:path}")
-    async def serve_react_app(catchall: str):
-        file_path = f".output/public/{catchall}"
-        # Kalau file-nya (seperti gambar, css, js) ada, tampilkan
-        if os.path.exists(file_path) and os.path.isfile(file_path):
-            return FileResponse(file_path)
-
-        # Kalau file tidak ditemukan, selalu kembalikan ke tampilan utama web (index.html)
-        index_path = ".output/public/index.html"
-        if os.path.exists(index_path):
-            return FileResponse(index_path)
-        return {"pesan": "Halaman utama web tidak ditemukan di folder .output/public"}
 
 if __name__ == "__main__":
     import uvicorn
