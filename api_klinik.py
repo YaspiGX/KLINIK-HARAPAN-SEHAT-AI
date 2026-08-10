@@ -2,6 +2,8 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from cryptography.fernet import Fernet
 from pydantic import BaseModel
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 import google.generativeai as genai
 import sqlite3
 import os
@@ -201,10 +203,6 @@ async def get_riwayat_alias():
 async def konsultasi_alias(request: Request):
     return await handle_konsultasi_logic(request, DB_UMUM, "buku_umum.txt", "Dokter Umum")
 
-@app.get("/")
-async def root():
-    return {"status": "Server Klinik Harapan Sehat API Online! 🚀"}
-
 @app.post("/konsultasi/gigi")
 async def konsultasi_gigi(request: Request):
     return await handle_konsultasi_logic(request, DB_GIGI, "buku_gigi.txt", "Dokter Gigi")
@@ -324,6 +322,24 @@ async def admin_hapus_data(db_target: str, item_id: int):
 async def admin_edit_data(db_target: str, item_id: int, data: EditData):
     target_db = DB_UMUM if db_target == "umum" else DB_GIGI
     return edit_data_logic(target_db, item_id, data)
+
+# ==========================================
+# 🌐 MENAMPILKAN WEB FRONTEND DI RAILWAY
+# ==========================================
+# Kita suruh Python membaca folder .output/public hasil build kamu
+if os.path.exists(".output/public"):
+    @app.get("/{catchall:path}")
+    async def serve_react_app(catchall: str):
+        file_path = f".output/public/{catchall}"
+        # Kalau file-nya (seperti gambar, css, js) ada, tampilkan
+        if os.path.exists(file_path) and os.path.isfile(file_path):
+            return FileResponse(file_path)
+
+        # Kalau file tidak ditemukan, selalu kembalikan ke tampilan utama web (index.html)
+        index_path = ".output/public/index.html"
+        if os.path.exists(index_path):
+            return FileResponse(index_path)
+        return {"pesan": "Halaman utama web tidak ditemukan di folder .output/public"}
 
 if __name__ == "__main__":
     import uvicorn
