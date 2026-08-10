@@ -1,4 +1,0 @@
-providers = ["python", "node"]
-
-[start]
-cmd = "python -m uvicorn api_klinik:app --host 0.0.0.0 --port 8080"

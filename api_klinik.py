@@ -305,7 +305,7 @@ async def get_semua_riwayat_admin():
         conn = sqlite3.connect(DB_GIGI, check_same_thread=False)
         cursor = conn.cursor()
         cursor.execute("SELECT id, keluhan_pasien, created_at FROM riwayat_chat ORDER BY id DESC")
-        for r infetchall():
+        for r in cursor.fetchall():
             decrypted_keluhan = decrypt_data(str(r[1]) if r[1] else "Pasien Baru")
             judul = f"Pasien: {decrypted_keluhan[:28]}..." if len(decrypted_keluhan) > 28 else f"Pasien: {decrypted_keluhan}"
             semua_data.append({"id": r[0], "db_target": "gigi", "ruangan": "Dokter Gigi", "badge": "🦷", "title": judul, "date": str(r[2])[:16] if r[2] else ""})
