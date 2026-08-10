@@ -24,15 +24,15 @@ def decrypt_data(text: str) -> str:
         return text 
 
 # ==========================================
-# 🔑 API KEY GEMINI (Aman pakai Environment Variable)
+# 🔑 API KEY GEMINI (GANTI DENGAN KUNCI KAMU)
 # ==========================================
-api_key = os.environ.get("GEMINI_API_KEY")
+api_key = "MASUKKAN_API_KEY_GEMINI_KAMU_DI_SINI"
 genai.configure(api_key=api_key)
 
 app = FastAPI()
 
 # ==========================================
-# 🌐 BUKA GERBANG CORS (Untuk Akses dari Web Lain)
+# 🌐 BUKA GERBANG CORS
 # ==========================================
 app.add_middleware(
     CORSMiddleware, 
@@ -43,7 +43,7 @@ app.add_middleware(
 )
 
 # ==========================================
-# 🗄️ INISIALISASI 2 DATABASE TERPISAH
+# 🗄️ INISIALISASI DATABASE
 # ==========================================
 DB_UMUM = 'klinik_umum.db'
 DB_GIGI = 'klinik_gigi.db'
@@ -87,7 +87,7 @@ class EditData(BaseModel):
     jawaban_ai: str
 
 # ==========================================
-# 🧠 LOGIK AI GEMINI (DENGAN DEBUG TRANSPARAN)
+# 🧠 LOGIK AI GEMINI (MENGGUNAKAN GEMINI 2.0 FLASH)
 # ==========================================
 async def handle_konsultasi_logic(request: Request, db_file: str, buku_file: str, role_title: str):
     try:
@@ -107,7 +107,7 @@ async def handle_konsultasi_logic(request: Request, db_file: str, buku_file: str
         TUGASMU: Analisis gejala pasien HANYA berdasarkan Buku Pedoman di atas. Jangan jawab pasien sekarang, tuliskan analisis internalmu."""
         
         thought_model = genai.GenerativeModel(
-            model_name='gemini-1.5-flash',
+            model_name='gemini-2.0-flash',
             system_instruction=thought_instruction
         )
         thought_response = thought_model.generate_content(gemini_messages)
@@ -145,7 +145,7 @@ async def handle_konsultasi_logic(request: Request, db_file: str, buku_file: str
         ⚠️ **REKOMENDASI MEDIS:** [Saran tindakan medis darurat atau rujukan spesialis. AMBIL DARI BUKU PEDOMAN JIKA ADA]."""
         
         final_model = genai.GenerativeModel(
-            model_name='gemini-1.5-flash',
+            model_name='gemini-2.0-flash',
             system_instruction=final_instruction
         )
         final_response = final_model.generate_content(gemini_messages)
