@@ -26,8 +26,8 @@ const QUICK_PROMPTS = [
 function Avatar({ role }: { role: "user" | "doctor" }) {
   const isDoctor = role === "doctor";
   return (
-    <div className={"flex h-8 w-8 shrink-0 items-center justify-center rounded-full shadow-md ring-2 ring-white " + (isDoctor ? "bg-teal-600 text-white" : "bg-slate-200 text-slate-700")}>
-      {isDoctor ? <Stethoscope className="h-4 w-4" /> : <User2 className="h-4 w-4" />}
+    <div className={"flex h-8 w-8 shrink-0 items-center justify-center rounded-full shadow-md ring-2 ring-white " + (isDoctor ? "bg-indigo-600 text-white" : "bg-slate-200 text-slate-700")}>
+      {isDoctor ? <Heart className="h-4 w-4" fill="currentColor" /> : <User2 className="h-4 w-4" />}
     </div>
   );
 }
@@ -38,6 +38,7 @@ function MessageBubble({ message, onSend }: { message: ChatMessage, onSend: (tex
   let questions: string[] = [];
   let recommendationText = "";
 
+  // PARSER UNTUK MEMBUAT TOMBOL INTERAKTIF
   if (!isUser && message.content.includes("PERTANYAAN LANJUTAN UNTUK MEMASTIKAN:")) {
     const parts = message.content.split("PERTANYAAN LANJUTAN UNTUK MEMASTIKAN:");
     mainText = parts[0].trim();
@@ -53,21 +54,22 @@ function MessageBubble({ message, onSend }: { message: ChatMessage, onSend: (tex
   return (
     <div className={`flex items-end gap-2 my-2 ${isUser ? "justify-end" : "justify-start"}`}>
       {!isUser && <Avatar role="doctor" />}
-      <div className={"relative max-w-[85%] rounded-2xl px-4 py-3 text-xs shadow-sm leading-relaxed " + (isUser ? "rounded-br-sm bg-teal-600 text-white font-medium" : "rounded-bl-sm bg-white text-slate-800 border border-slate-200")}>
+      <div className={"relative max-w-[85%] rounded-2xl px-4 py-3 text-xs shadow-sm leading-relaxed " + (isUser ? "rounded-br-sm bg-indigo-600 text-white font-medium" : "rounded-bl-sm bg-white text-slate-800 border border-slate-200")}>
         <div className={!isUser ? "pr-6" : ""}>
           <ReactMarkdown components={{
               p: ({ node, ...props }) => <p className={`mb-2 last:mb-0 ${isUser ? "text-white" : "text-slate-800"}`} {...props} />,
               strong: ({ node, ...props }) => <strong className={`font-semibold ${isUser ? "text-white" : "text-slate-900"}`} {...props} />,
             }}>{mainText}</ReactMarkdown>
 
+          {/* RENDER TOMBOL PERTANYAAN (KLIKABEL) */}
           {questions.length > 0 && (
             <div className="mt-3 pt-3 border-t border-slate-200">
               <div className="flex flex-col gap-1.5">
                 {questions.map((q, i) => {
-                  const cleanQ = q.replace(/^[\d\.\-\*]\s*/, '').replace(/\*\*/g, '').trim();
+                  const cleanQ = q.replace(/^[\d\.\-\*a-zA-Z]\.?\s*/, '').replace(/\*\*/g, '').trim();
                   if (!cleanQ) return null;
                   return (
-                    <button key={i} onClick={() => onSend(cleanQ)} className="text-left w-full rounded-lg border border-teal-200 bg-teal-50/60 px-3 py-2 text-xs font-medium text-teal-800 transition hover:bg-teal-100">
+                    <button key={i} onClick={() => onSend(cleanQ)} className="text-left w-full rounded-lg border border-indigo-200 bg-indigo-50/60 px-3 py-2 text-xs font-medium text-indigo-800 transition hover:bg-indigo-100">
                       {cleanQ}
                     </button>
                   )
@@ -102,16 +104,7 @@ function Index() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [currentTime, setCurrentTime] = useState("");
 
-  // --- STATE CHAT MELAYANG (FLOATING AI) ---
-  const [isOpen, setIsOpen] = useState(false);
-  const pesanAwal = { id: makeId(), role: "doctor" as const, content: "Halo! Ada yang bisa saya bantu terkait keluhan kesehatan Anda hari ini? 👋" };
-  const [messages, setMessages] = useState<ChatMessage[]>([pesanAwal]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
-
-  // --- STATE MODAL & FORM PASIEN (HsDX) ---
+  // --- STATE FORM PASIEN (HsDX) ---
   const [formData, setFormData] = useState({
     nama: "Rayi Amada Surya Ridwan",
     umur: "18",
@@ -120,9 +113,15 @@ function Index() {
     keluhan: "",
     riwayat: "Tidak ada alergi obat."
   });
-  const [showAiModal, setShowAiModal] = useState(false);
-  const [aiLoading, setAiLoading] = useState(false);
-  const [aiResult, setAiResult] = useState("");
+
+  // --- STATE CHAT MELAYANG (FLOATING AI) ---
+  const [isOpen, setIsOpen] = useState(false);
+  const pesanAwal = { id: makeId(), role: "doctor" as const, content: "Halo! Saya mesin analitik HsDX. Ada data klinis yang perlu ditinjau? 👋" };
+  const [messages, setMessages] = useState<ChatMessage[]>([pesanAwal]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     const updateClock = () => {
@@ -141,7 +140,7 @@ function Index() {
   }, [messages, loading, isOpen]);
 
   // ==========================================
-  // FUNGSI API UNTUK CHAT MELAYANG
+  // FUNGSI API UTAMA (MENGIRIM PESAN KE RAILWAY)
   // ==========================================
   async function sendMessage(text: string) {
     if (!text || loading) return;
@@ -179,41 +178,19 @@ function Index() {
   }
 
   // ==========================================
-  // FUNGSI API UNTUK FORM HsDX (MODAL POPUP)
+  // FUNGSI KONEKTOR: TOMBOL FORM -> FLOATING CHAT
   // ==========================================
-  const handleBantuanHsDX = async () => {
+  const handleBantuanHsDX = () => {
     if (!formData.keluhan.trim()) {
       alert("Keluhan pasien tidak boleh kosong sebelum menjalankan analisis.");
       return;
     }
 
-    setShowAiModal(true);
-    setAiLoading(true);
-    setAiResult("");
+    // Gabungkan data form menjadi prompt yang rapi
+    const autoPrompt = `SKRINING KLINIS PASIEN:\n- Usia: ${formData.umur} tahun\n- Gender: ${formData.jenis_kelamin}\n- Tensi: ${formData.tensi}\n- Keluhan: ${formData.keluhan}\n- Riwayat: ${formData.riwayat}`;
 
-    const autoPrompt = `Lakukan skrining medis. \nUsia: ${formData.umur} tahun \nGender: ${formData.jenis_kelamin} \nTensi: ${formData.tensi} \nKeluhan Utama: ${formData.keluhan} \nRiwayat: ${formData.riwayat}`;
-
-    try {
-      const endpoint = selectedRoom === "Poli Gigi" 
-        ? "https://klinik-harapan-sehat-ai-production-3384.up.railway.app/konsultasi/gigi"
-        : "https://klinik-harapan-sehat-ai-production-3384.up.railway.app/konsultasi/umum";
-
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          messages: [{ role: "user", content: autoPrompt }] 
-        }),
-      });
-
-      if (!response.ok) throw new Error("Server sibuk");
-      const data = await response.json();
-      setAiResult(data.pesan);
-    } catch (error) {
-      setAiResult("⚠️ Gagal memuat analisis HsDX dari server. Pastikan API Railway online.");
-    } finally {
-      setAiLoading(false);
-    }
+    setIsOpen(true); // Membuka floating chat otomatis
+    sendMessage(autoPrompt); // Mengirim pesan langsung ke chat
   };
 
   // ==========================================
@@ -245,7 +222,7 @@ function Index() {
             </div>
             <div className="flex items-center gap-2 text-xs text-slate-600"><input type="checkbox" id="showPass" checked={showPassword} onChange={() => setShowPassword(!showPassword)} className="rounded border-slate-300 text-teal-600 focus:ring-teal-500"/><label htmlFor="showPass" className="cursor-pointer">Lihat Password</label></div>
             <button type="submit" className="w-full py-3 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg shadow-md transition duration-200 text-sm">Masuk</button>
-            <button type="button" onClick={() => alert("Silakan hubungi Administrator IT Klinik untuk pendaftaran akun baru.")} className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg shadow-md transition duration-200 text-sm">Daftar</button>
+            <button type="button" onClick={() => alert("Hubungi IT.")} className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-lg shadow-md transition duration-200 text-sm">Daftar</button>
           </form>
         </div>
       </div>
@@ -304,8 +281,6 @@ function Index() {
 
       {/* KONTEN UTAMA */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-        
-        {/* TOP NAVBAR */}
         <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 z-20 shadow-sm">
           <div className="flex items-center gap-4"><span className="text-xs font-semibold px-3 py-1 bg-teal-50 text-teal-800 rounded-full border border-teal-200">Ruangan: {selectedRoom}</span></div>
           <div className="flex items-center gap-6">
@@ -333,7 +308,6 @@ function Index() {
             <div className="text-xs font-medium bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600">📅 Periode: 2026-08-04 - 2026-08-11</div>
           </div>
 
-          {/* KARTU STATISTIK */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               { title: "Total Kunjungan Pasien", val: "1.697", color: "border-l-4 border-l-sky-500 text-sky-600" },
@@ -349,7 +323,7 @@ function Index() {
           </div>
 
           {/* ============================================================== */}
-          {/* AREA FORM PASIEN & TOMBOL HsDX (MENGGANTIKAN GRAFIK SEBELUMNYA)*/}
+          {/* AREA FORM PASIEN & TOMBOL TRIGGER HsDX */}
           {/* ============================================================== */}
           <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 relative">
             <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
@@ -358,7 +332,6 @@ function Index() {
             
             <div className="flex flex-col md:flex-row gap-8">
               
-              {/* KIRI: Informasi Pasien */}
               <div className="flex-1 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -393,9 +366,7 @@ function Index() {
                 </div>
               </div>
 
-              {/* KANAN: Riwayat, Tombol, Logo */}
               <div className="w-full md:w-1/3 flex flex-col justify-between space-y-4">
-                
                 <div className="space-y-4">
                   <div>
                     <label className="block text-xs font-bold text-slate-600 mb-1">Riwayat Penyakit / Alergi</label>
@@ -407,20 +378,20 @@ function Index() {
                   </div>
                   <div className="bg-indigo-50 border border-indigo-100 rounded-lg p-3">
                     <p className="text-[10px] text-indigo-800 font-medium leading-relaxed">
-                      Sistem HsDX akan menganalisis keluhan klinis berdasarkan pedoman internal. Pastikan data diisi dengan akurat.
+                      Sistem HsDX akan menganalisis keluhan klinis dan memunculkannya di chat interaktif untuk evaluasi lebih lanjut.
                     </p>
                   </div>
                 </div>
 
-                {/* AREA TOMBOL & LOGO */}
+                {/* 🎯 TOMBOL YANG TERHUBUNG LANGSUNG KE FLOATING CHAT */}
                 <div className="flex items-end justify-between mt-auto pt-4">
                   <button 
                     onClick={handleBantuanHsDX}
-                    disabled={aiLoading}
+                    disabled={loading}
                     className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-xl font-bold shadow-md transition-all disabled:opacity-50"
                   >
-                    {aiLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
-                    {aiLoading ? "Memproses HsDX..." : "Jalankan HsDX"}
+                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
+                    {loading ? "Memproses HsDX..." : "Jalankan HsDX"}
                   </button>
 
                   <div className="ml-4 flex flex-col items-center justify-center text-indigo-400 opacity-80 bg-indigo-50 p-2 rounded-lg border border-indigo-100">
@@ -436,85 +407,43 @@ function Index() {
       </div>
 
       {/* ============================================================== */}
-      {/* FLOATING AI CHAT ASSISTANT (TETAP DIPERTAHANKAN) */}
+      {/* FLOATING AI CHAT ASSISTANT (TAMPILAN INTERAKTIF HsDX) */}
       {/* ============================================================== */}
       <div className="fixed bottom-6 right-6 z-50">
         {isOpen && (
           <div className="mb-4 w-[360px] md:w-[400px] h-[520px] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-fade-in">
-            <div className="bg-teal-700 text-white p-4 flex items-center justify-between shrink-0 shadow-sm">
+            <div className="bg-indigo-700 text-white p-4 flex items-center justify-between shrink-0 shadow-sm">
               <div className="flex items-center gap-2.5">
-                <div className="h-8 w-8 rounded-full bg-teal-600 flex items-center justify-center border border-teal-500"><Heart className="h-4 w-4 text-white" fill="currentColor" /></div>
+                <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center border border-indigo-500"><Heart className="h-4 w-4 text-white" fill="currentColor" /></div>
                 <div>
-                  <h3 className="font-bold text-sm leading-tight">Asisten AI ({selectedRoom})</h3>
-                  <p className="text-[10px] text-teal-200 flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Terhubung ke Railway API</p>
+                  <h3 className="font-bold text-sm leading-tight">Mesin HsDX ({selectedRoom})</h3>
+                  <p className="text-[10px] text-indigo-200 flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Terhubung ke Railway API</p>
                 </div>
               </div>
-              <button onClick={() => setIsOpen(false)} className="text-teal-200 hover:text-white p-1 rounded-lg transition"><X className="h-5 w-5" /></button>
+              <button onClick={() => setIsOpen(false)} className="text-indigo-200 hover:text-white p-1 rounded-lg transition"><X className="h-5 w-5" /></button>
             </div>
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 bg-slate-50/50">
               {messages.map((m) => (<MessageBubble key={m.id} message={m} onSend={sendMessage} />))}
               {loading && (
-                <div className="flex items-center gap-2 my-2"><Avatar role="doctor" /><div className="bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm"><Loader2 className="h-4 w-4 animate-spin text-teal-600" /></div></div>
+                <div className="flex items-center gap-2 my-2"><Avatar role="doctor" /><div className="bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm"><Loader2 className="h-4 w-4 animate-spin text-indigo-600" /></div></div>
               )}
             </div>
             {messages.length <= 1 && (
               <div className="px-3 py-2 bg-white border-t border-slate-100 flex gap-1.5 overflow-x-auto">
-                {QUICK_PROMPTS.map((p) => (<button key={p} onClick={() => sendMessage(p)} className="shrink-0 rounded-full border border-teal-200 bg-teal-50/50 px-3 py-1 text-[11px] font-medium text-teal-700 hover:bg-teal-100">{p}</button>))}
+                {QUICK_PROMPTS.map((p) => (<button key={p} onClick={() => sendMessage(p)} className="shrink-0 rounded-full border border-indigo-200 bg-indigo-50/50 px-3 py-1 text-[11px] font-medium text-indigo-700 hover:bg-indigo-100">{p}</button>))}
               </div>
             )}
             <form onSubmit={handleSubmit} className="p-3 bg-white border-t border-slate-200 shrink-0 flex items-center gap-2">
-              <textarea ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }} rows={1} placeholder={`Tanya AI seputar ${selectedRoom}...`} className="flex-1 resize-none bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-teal-500 max-h-20" disabled={loading}/>
-              <button type="submit" disabled={loading || !input.trim()} className="h-9 w-9 shrink-0 bg-teal-600 text-white rounded-xl flex items-center justify-center hover:bg-teal-700 transition disabled:opacity-50 shadow-sm"><Send className="h-4 w-4" /></button>
+              <textarea ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }} rows={1} placeholder={`Tanya HsDX seputar ${selectedRoom}...`} className="flex-1 resize-none bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-indigo-500 max-h-20" disabled={loading}/>
+              <button type="submit" disabled={loading || !input.trim()} className="h-9 w-9 shrink-0 bg-indigo-600 text-white rounded-xl flex items-center justify-center hover:bg-indigo-700 transition disabled:opacity-50 shadow-sm"><Send className="h-4 w-4" /></button>
             </form>
           </div>
         )}
-        <button onClick={() => setIsOpen(!isOpen)} className="h-14 w-14 rounded-full bg-teal-600 text-white shadow-xl flex items-center justify-center hover:bg-teal-700 transition-all hover:scale-105 relative group">
+        <button onClick={() => setIsOpen(!isOpen)} className="h-14 w-14 rounded-full bg-indigo-600 text-white shadow-xl flex items-center justify-center hover:bg-indigo-700 transition-all hover:scale-105 relative group">
           <MessageSquare className="h-6 w-6" />
           <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-emerald-500 border-2 border-white animate-pulse"></span>
         </button>
       </div>
-
-      {/* ============================================================== */}
-      {/* MODAL / POPUP HASIL HsDX (DI TANGENGAH LAYAR) */}
-      {/* ============================================================== */}
-      {showAiModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm">
-          <div className="bg-white w-[90%] md:w-[700px] max-h-[85vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden transform transition-all">
-            <div className="bg-indigo-700 p-4 flex justify-between items-center text-white shrink-0">
-              <h3 className="font-bold flex items-center gap-2"><Sparkles className="w-5 h-5 text-indigo-200" /> Hasil Analisis HsDX</h3>
-              <button onClick={() => setShowAiModal(false)} className="hover:bg-indigo-600 p-1.5 rounded-lg transition-colors"><X className="w-5 h-5" /></button>
-            </div>
-            <div className="p-6 overflow-y-auto bg-slate-50 flex-1">
-              {aiLoading ? (
-                <div className="flex flex-col items-center justify-center py-16 opacity-80">
-                  <div className="relative mb-6">
-                    <div className="w-12 h-12 border-4 border-indigo-200 rounded-full animate-ping absolute"></div>
-                    <Loader2 className="w-12 h-12 animate-spin text-indigo-600 relative z-10" />
-                  </div>
-                  <p className="font-mono text-sm text-indigo-900 font-semibold text-center">
-                    Mengekstraksi parameter klinis pasien...<br/>
-                    <span className="text-xs font-normal text-slate-500">Menganalisis matriks diagnostik...</span>
-                  </p>
-                </div>
-              ) : (
-                <div className="bg-white border border-indigo-100 rounded-xl p-5 shadow-sm text-sm text-slate-800 leading-relaxed">
-                  <ReactMarkdown components={{
-                    h3: ({node, ...props}) => <h3 className="text-indigo-800 font-black text-base mt-4 mb-2 border-b border-indigo-50 pb-1" {...props} />,
-                    ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-4 text-slate-700" {...props} />,
-                    strong: ({node, ...props}) => <strong className="font-extrabold text-slate-900" {...props} />,
-                    p: ({node, ...props}) => <p className="mb-3 last:mb-0" {...props} />
-                  }}>
-                    {aiResult}
-                  </ReactMarkdown>
-                </div>
-              )}
-            </div>
-            <div className="bg-white border-t border-slate-200 p-4 shrink-0 bg-slate-100/50">
-              <p className="text-[10px] text-slate-500 text-center font-medium">⚠️ HsDX hanya sebagai asisten sekunder. Keputusan klinis mutlak berada di tangan Dokter Penanggung Jawab.</p>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );
