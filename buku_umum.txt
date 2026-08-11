@@ -1,0 +1,17 @@
+=== PANDUAN KLINIK UMUM - REKAM MEDIS & DIAGNOSIS ===
+
+1. ISPA (Infeksi Saluran Pernapasan Akut)
+- Gejala: Demam, batuk, pilek, sakit tenggorokan, badan pegal-pegal.
+- Penanganan: Istirahat cukup, banyak minum air putih, obat penurun panas (paracetamol), dan vitamin C. Anjurkan periksa ke dokter jika demam berlebih lebih dari 3 hari.
+
+2. Hipertensi (Tekanan Darah Tinggi)
+- Gejala: Sakit kepala bagian belakang, tengkuk terasa kaku, mudah lelah, pusing.
+- Penanganan: Kurangi konsumsi garam dan makanan berlemak, olahraga teratur, istirahat cukup, dan berikan obat antihipertensi sesuai resep dokter.
+
+3. Gastritis (Maag / Asam Lambung)
+- Gejala: Nyeri atau perih di ulu hati, mual, kembung, sering bersendawa.
+- Penanganan: Makan tepat waktu, hindari makanan pedas, asam, dan kopi. Berikan antasida atau obat lambung penurun asam.
+
+4. Diabetes Melitus Tipe 2
+- Gejala: Sering merasa haus, sering buang air kecil di malam hari, mudah lapar, luka lama sembuh.
+- Penanganan: Kontrol kadar gula darah secara rutin, kurangi konsumsi gula manis dan karbohidrat berlebih, serta konsultasi rutin dengan dokter umum.

@@ -2,14 +2,14 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from cryptography.fernet import Fernet
 from pydantic import BaseModel
-from google import genai
-from google.genai import types
+from groq import Groq
 import sqlite3
 import os
 
 # ==========================================
 # 🛡️ KUNCI RAHASIA ENKRIPSI DATABASE
 # ==========================================
+# Sangat disarankan: Ganti dengan os.getenv("ENCRYPTION_KEY") di production Railway
 SECRET_ENCRYPTION_KEY = b'vS-hEbxZ97z9O-_fGWeYvYkM2_P8_kS3R5U5y3V7wQA='
 cipher_suite = Fernet(SECRET_ENCRYPTION_KEY)
 
@@ -25,10 +25,11 @@ def decrypt_data(text: str) -> str:
         return text 
 
 # ==========================================
-# 🔑 INISIALISASI CLIENT GEMINI TERBARU
+# 🔑 INISIALISASI CLIENT GROQ
 # ==========================================
-api_key = "AQ.Ab8RN6IP_16A6y0Pzk8M1lEzqVAFbEBHMQDD5l1D_9ZrkMpCFg"
-client = genai.Client(api_key=api_key)
+# Sangat disarankan: Jangan hardcode API key. Gunakan environment variable di Railway.
+api_key = os.getenv("GROQ_API_KEY", "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") 
+groq_client = Groq(api_key=api_key)
 
 app = FastAPI()
 
@@ -37,6 +38,7 @@ app = FastAPI()
 # ==========================================
 app.add_middleware(
     CORSMiddleware, 
+    # Ganti "*" dengan URL Vercel Anda di production (misal: "https://klinik.vercel.app")
     allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"], 
@@ -74,6 +76,9 @@ def init_db(db_name):
 init_db(DB_UMUM)
 init_db(DB_GIGI)
 
+# ==========================================
+# 🧠 OPTIMASI I/O BUKU MEDIS
+# ==========================================
 def baca_buku_medis(filename):
     if os.path.exists(filename):
         with open(filename, "r", encoding="utf-8") as file:
@@ -83,64 +88,65 @@ def baca_buku_medis(filename):
             return file.read()
     return "Gunakan pengetahuan medismu sendiri karena referensi tidak ditemukan."
 
+# Cache buku medis saat server menyala agar tidak diulang tiap request
+REFERENSI_UMUM = baca_buku_medis("buku_umum.txt")
+REFERENSI_GIGI = baca_buku_medis("buku_gigi.txt")
+
 class EditData(BaseModel):
     keluhan_pasien: str
     jawaban_ai: str
 
 # ==========================================
-# 🧠 LOGIK AI HEMAT KUOTA (1 KALI PANGGIL)
+# 🧠 LOGIK AI (MENGGUNAKAN GROQ)
 # ==========================================
-async def handle_konsultasi_logic(request: Request, db_file: str, buku_file: str, role_title: str):
+async def handle_konsultasi_logic(request: Request, db_file: str, referensi_teks: str, role_title: str):
     try:
         data = await request.json()
-        raw_messages = data.get("messages", []) 
+        raw_messages = data.get("messages", [])
         
-        gemini_messages = []
-        for msg in raw_messages:
-            role = "user" if msg["role"] == "user" else "model"
-            gemini_messages.append({"role": role, "parts": [{"text": msg["content"]}]})
-            
-        referensi_klinik = baca_buku_medis(buku_file)
-
-        # Instruksi digabung jadi satu agar hemat kuota API dan tidak kena error 429
+        # Batasi histori agar tidak kehabisan token context (hanya 6 pesan terakhir)
+        recent_messages = raw_messages[-6:] if len(raw_messages) > 6 else raw_messages
+        
+        # Format histori pesan untuk Groq/OpenAI spec
         system_instruction = f"""Kamu adalah asisten medis spesialis {role_title} cerdas ala DxGPT di Klinik Harapan Sehat.
-        PEDOMAN MEDIS: {referensi_klinik}
+        PEDOMAN MEDIS SINGKAT: {referensi_teks[:1500]} # Dibatasi 1500 karakter untuk menghemat token
         
-        TUGASMU: Analisis gejala pasien berdasarkan buku pedoman di atas dan berikan respons dengan format persis seperti ini:
+        TUGASMU: Analisis gejala pasien berdasarkan pedoman dan berikan respons dengan format:
 
         ### 1. [Nama Penyakit Utama]
         [Deskripsi singkat mengenai penyakit tersebut]
         - **Matching symptoms:** [Sebutkan gejala pasien yang cocok dengan penyakit ini]
-        - **Non-matching symptoms:** [Sebutkan gejala atau kondisi pasien yang tidak cocok, atau tulis 'None']
-
-        ### 2. [Nama Penyakit Banding Pertama]
-        [Deskripsi singkat]
-        - **Matching symptoms:** [...]
-        - **Non-matching symptoms:** [...]
-
-        ### 3. [Nama Penyakit Banding Kedua]
-        [Deskripsi singkat]
-        - **Matching symptoms:** [...]
-        - **Non-matching symptoms:** [...]
+        - **Non-matching symptoms:** [Sebutkan gejala yang tidak cocok, atau tulis 'None']
 
         PERTANYAAN LANJUTAN UNTUK MEMASTIKAN:
         a. [Pertanyaan pertama]
         b. [Pertanyaan kedua]
-        c. [Pertanyaan ketiga]
 
-        ⚠️ **REKOMENDASI MEDIS:** [Saran tindakan medis darurat atau rujukan spesialis berdasarkan buku pedoman]."""
+        ⚠️ **REKOMENDASI MEDIS:** [Saran tindakan medis darurat atau rujukan]."""
         
-        response = client.models.generate_content(
-            model='gemini-2.0-flash',
-            contents=gemini_messages,
-            config=types.GenerateContentConfig(
-                system_instruction=system_instruction
-            )
+        formatted_messages = [
+            {"role": "system", "content": system_instruction}
+        ]
+        
+        for msg in recent_messages:
+            # Map role dari frontend ('user' atau 'doctor') ke spec Groq ('user' atau 'assistant')
+            role = "user" if msg["role"] == "user" else "assistant"
+            formatted_messages.append({"role": role, "content": msg["content"]})
+            
+        # Panggilan ke Groq 
+        chat_completion = groq_client.chat.completions.create(
+            messages=formatted_messages,
+            model="llama-3.3-70b-versatile", # Model Llama 3.3 70B di Groq
+            temperature=0.3,
+            max_tokens=1024,
         )
-        pesan_ai = response.text
         
+        pesan_ai = chat_completion.choices[0].message.content
+
+        # Ekstraksi pesan terakhir pasien untuk disimpan
         pesan_pasien = raw_messages[-1]["content"] if raw_messages else "Pesan kosong"
         
+        # Simpan ke Database
         encrypted_pasien = encrypt_data(pesan_pasien)
         encrypted_ai = encrypt_data(pesan_ai)
         
@@ -152,21 +158,22 @@ async def handle_konsultasi_logic(request: Request, db_file: str, buku_file: str
         print(f"Berhasil menyimpan riwayat {role_title} TERENKRIPSI! 🔒✅")
 
         return {"pesan": pesan_ai}
+        
     except Exception as e:
-        error_msg = str(e)
-        print(f"Error AI Detail: {error_msg}")
-        return {"pesan": f"⚠️ DEBUG ERROR AI: {error_msg}"}
+        # MITIGASI ERROR: Cegah error JSON bocor ke UI pasien
+        print(f"CRITICAL ERROR AI: {str(e)}")
+        return {"pesan": "Sistem kami sedang mengalami antrean. Silakan coba kembali dalam beberapa saat."}
 
 # ==========================================
 # 🩺 ENDPOINT RUTING UTAMA
 # ==========================================
 @app.get("/")
 async def root():
-    return {"status": "Server Klinik Harapan Sehat API Online! 🚀"}
+    return {"status": "Server Klinik Harapan Sehat API (Groq Engine) Online! 🚀"}
 
 @app.post("/konsultasi/umum")
 async def konsultasi_umum(request: Request):
-    return await handle_konsultasi_logic(request, DB_UMUM, "buku_umum.txt", "Dokter Umum")
+    return await handle_konsultasi_logic(request, DB_UMUM, REFERENSI_UMUM, "Dokter Umum")
 
 @app.get("/riwayat/umum")
 async def get_riwayat_umum():
@@ -190,11 +197,11 @@ async def get_riwayat_alias():
 
 @app.post("/konsultasi")
 async def konsultasi_alias(request: Request):
-    return await handle_konsultasi_logic(request, DB_UMUM, "buku_umum.txt", "Dokter Umum")
+    return await handle_konsultasi_logic(request, DB_UMUM, REFERENSI_UMUM, "Dokter Umum")
 
 @app.post("/konsultasi/gigi")
 async def konsultasi_gigi(request: Request):
-    return await handle_konsultasi_logic(request, DB_GIGI, "buku_gigi.txt", "Dokter Gigi")
+    return await handle_konsultasi_logic(request, DB_GIGI, REFERENSI_GIGI, "Dokter Gigi")
 
 @app.get("/riwayat/gigi")
 async def get_riwayat_gigi():
