@@ -126,7 +126,7 @@ function Index() {
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1 rounded-lg hover:bg-slate-100 text-slate-500"><Menu className="w-5 h-5" /></button>
         </div>
         
-        <div className="flex-1 overflow-y-auto py-3 px-2 space-y-1">
+<div className="flex-1 overflow-y-auto py-3 px-2 space-y-1">
           {[
             { name: "POLI RAWAT JALAN", icon: Stethoscope },
             { name: "DASHBOARD", icon: LayoutDashboard },
@@ -138,7 +138,7 @@ function Index() {
                 <div className="flex items-center gap-3"><Icon className="w-4 h-4 shrink-0" />{sidebarOpen && <span className="truncate">{item.name}</span>}</div>
               </button>
             );
-});
+          })}
         </div>
       </aside>
 
