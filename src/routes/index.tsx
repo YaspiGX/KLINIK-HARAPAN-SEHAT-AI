@@ -61,31 +61,45 @@ function MessageBubble({ message, onSend }: { message: ChatMessage, onSend: (tex
               strong: ({ node, ...props }) => <strong className={`font-semibold ${isUser ? "text-white" : "text-slate-900"}`} {...props} />,
             }}>{mainText}</ReactMarkdown>
 
-          {/* RENDER TOMBOL PERTANYAAN PILIHAN GANDA (A, B, C) */}
+          {/* RENDER KOTAK PERTANYAAN DENGAN TOMBOL YA / TIDAK */}
           {questions.length > 0 && (
             <div className="mt-3 pt-3 border-t border-indigo-100">
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3">
                 {questions.map((q, i) => {
-                  // Hapus format bold markdown, tapi BIARKAN huruf a,b,c nya
                   const rawText = q.replace(/\*\*/g, '').trim();
                   if (!rawText) return null;
 
-                  // Deteksi pola awalan seperti "a.", "b.", "A.", "1."
+                  // Deteksi pola awalan A, B, C
                   const match = rawText.match(/^([a-zA-Z0-9]\.)\s*(.*)/);
-                  
-                  // Pisahkan prefix (A.) dengan isi teks pertanyaannya
                   const prefix = match ? match[1].toUpperCase() : "•";
                   const cleanQ = match ? match[2] : rawText;
 
                   return (
-                    <button 
-                      key={i} 
-                      onClick={() => onSend(rawText)} 
-                      className="flex items-start text-left w-full rounded-lg border border-indigo-200 bg-indigo-50/80 px-3 py-2 text-xs font-medium text-indigo-900 transition-all hover:bg-indigo-100 hover:border-indigo-400 hover:shadow-sm"
-                    >
-                      <span className="font-extrabold text-indigo-700 w-5 shrink-0">{prefix}</span>
-                      <span className="leading-relaxed">{cleanQ}</span>
-                    </button>
+                    <div key={i} className="flex flex-col rounded-lg border border-indigo-200 bg-indigo-50/80 p-2.5 transition-all hover:border-indigo-300 shadow-sm">
+                      
+                      {/* Teks Pertanyaan (Label) */}
+                      <div className="flex items-start text-xs font-medium text-indigo-900 mb-2.5">
+                        <span className="font-extrabold text-indigo-700 w-5 shrink-0">{prefix}</span>
+                        <span className="leading-relaxed">{cleanQ}</span>
+                      </div>
+                      
+                      {/* Tombol Aksi (Ya / Tidak) */}
+                      <div className="flex items-center gap-2 ml-5">
+                        <button 
+                          onClick={() => onSend(`Ya, pasien terkonfirmasi mengalami ini: ${cleanQ}`)}
+                          className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white px-2 py-1.5 rounded text-[10px] font-bold tracking-wide transition-colors shadow-sm"
+                        >
+                          Terkonfirmasi (Ya)
+                        </button>
+                        <button 
+                          onClick={() => onSend(`Tidak, pasien negatif / tidak mengalami ini: ${cleanQ}`)}
+                          className="flex-1 bg-rose-500 hover:bg-rose-600 text-white px-2 py-1.5 rounded text-[10px] font-bold tracking-wide transition-colors shadow-sm"
+                        >
+                          Negatif (Tidak)
+                        </button>
+                      </div>
+
+                    </div>
                   )
                 })}
               </div>
