@@ -61,16 +61,30 @@ function MessageBubble({ message, onSend }: { message: ChatMessage, onSend: (tex
               strong: ({ node, ...props }) => <strong className={`font-semibold ${isUser ? "text-white" : "text-slate-900"}`} {...props} />,
             }}>{mainText}</ReactMarkdown>
 
-          {/* RENDER TOMBOL PERTANYAAN (KLIKABEL) */}
+          {/* RENDER TOMBOL PERTANYAAN PILIHAN GANDA (A, B, C) */}
           {questions.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-slate-200">
-              <div className="flex flex-col gap-1.5">
+            <div className="mt-3 pt-3 border-t border-indigo-100">
+              <div className="flex flex-col gap-2">
                 {questions.map((q, i) => {
-                  const cleanQ = q.replace(/^[\d\.\-\*a-zA-Z]\.?\s*/, '').replace(/\*\*/g, '').trim();
-                  if (!cleanQ) return null;
+                  // Hapus format bold markdown, tapi BIARKAN huruf a,b,c nya
+                  const rawText = q.replace(/\*\*/g, '').trim();
+                  if (!rawText) return null;
+
+                  // Deteksi pola awalan seperti "a.", "b.", "A.", "1."
+                  const match = rawText.match(/^([a-zA-Z0-9]\.)\s*(.*)/);
+                  
+                  // Pisahkan prefix (A.) dengan isi teks pertanyaannya
+                  const prefix = match ? match[1].toUpperCase() : "•";
+                  const cleanQ = match ? match[2] : rawText;
+
                   return (
-                    <button key={i} onClick={() => onSend(cleanQ)} className="text-left w-full rounded-lg border border-indigo-200 bg-indigo-50/60 px-3 py-2 text-xs font-medium text-indigo-800 transition hover:bg-indigo-100">
-                      {cleanQ}
+                    <button 
+                      key={i} 
+                      onClick={() => onSend(rawText)} 
+                      className="flex items-start text-left w-full rounded-lg border border-indigo-200 bg-indigo-50/80 px-3 py-2 text-xs font-medium text-indigo-900 transition-all hover:bg-indigo-100 hover:border-indigo-400 hover:shadow-sm"
+                    >
+                      <span className="font-extrabold text-indigo-700 w-5 shrink-0">{prefix}</span>
+                      <span className="leading-relaxed">{cleanQ}</span>
                     </button>
                   )
                 })}
