@@ -28,7 +28,7 @@ def decrypt_data(text: str) -> str:
 # 🔑 INISIALISASI CLIENT GROQ
 # ==========================================
 # Sangat disarankan: Jangan hardcode API key. Gunakan environment variable di Railway.
-api_key = os.getenv("GROQ_API_KEY", "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") 
+api_key = os.getenv("GROQ_API_KEY", "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") 
 groq_client = Groq(api_key=api_key)
 
 app = FastAPI()
