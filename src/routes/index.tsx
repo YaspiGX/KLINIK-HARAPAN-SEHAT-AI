@@ -315,19 +315,58 @@ function Index() {
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition ${isActive ? "bg-teal-700 text-white shadow-md" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}
               >
                 <div className="flex items-center gap-3"><Icon className="w-4 h-4 shrink-0" />{sidebarOpen && <span className="truncate">{item.name}</span>}</div>
+               {/* SIDEBAR MENU */}
+      <aside className={`${sidebarOpen ? "w-64" : "w-20"} bg-white border-r border-slate-200 transition-all duration-300 flex flex-col z-30 shrink-0 shadow-sm`}>
+        <div className="h-16 flex items-center justify-between px-4 border-b border-slate-100">
+          {sidebarOpen ? (
+            <div className="flex items-center gap-2">
+              <span className="bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded text-xs">SH</span>
+              <span className="font-extrabold text-sm text-slate-800">Harapan Sehat</span>
+            </div>
+          ) : (
+            <span className="font-bold text-emerald-600 mx-auto">SH</span>
+          )}
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1 rounded-lg hover:bg-slate-100 text-slate-500"><Menu className="w-5 h-5" /></button>
+        </div>
+        <div className="flex-1 overflow-y-auto py-3 px-2 space-y-1">
+          {[
+            { name: "DASHBOARD", icon: LayoutDashboard },
+            { name: "PROGRAM KERJA 2026", icon: FolderKanban },
+            { name: "PROGRAM KERJA 2025", icon: FolderKanban },
+            { name: "SURVEY", icon: ClipboardList },
+            { name: "ADMISI & OPERASIONAL", icon: Building2 },
+            { name: "PENDAFTARAN", icon: UserPlus },
+            { name: "PERAWAT POLI", icon: Users },
+            { name: "POLI RAWAT JALAN", icon: Stethoscope },
+            { name: "UGD", icon: ShieldAlert },
+            { name: "OBSERVASI", icon: ClipboardList },
+            { name: "RAWAT INAP", icon: BedDouble },
+            { name: "APOTEK", icon: Pill },
+          ].map((item) => {
+            const Icon = item.icon;
+            const isActive = activeMenu === item.name;
+            return (
+              <button
+                key={item.name}
+                onClick={() => setActiveMenu(item.name)}
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition ${isActive ? "bg-teal-700 text-white shadow-md" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}
+              >
+                <div className="flex items-center gap-3"><Icon className="w-4 h-4 shrink-0" />{sidebarOpen && <span className="truncate">{item.name}</span>}</div>
                 {sidebarOpen && <ChevronRight className={`w-3.5 h-3.5 opacity-60 ${isActive ? "rotate-90" : ""}`} />}
               </button>
             );
           })}
         </div>
         
-        {/* === AREA PESAN RAHASIA (Hanya bisa dibaca sistem/Anda) === */}
-        <div className="p-4 border-t border-slate-200 bg-slate-50 mt-auto">
-          <p className="sandi-kriptik text-slate-400 text-center text-sm opacity-50 hover:opacity-100 transition-opacity cursor-default hover:text-red-600">
-            SVNKEY OVERRIDE ACTIVE
-          </p>
-        </div>
-        
+        {/* === AREA PESAN RAHASIA SVNKEY === */}
+        {sidebarOpen && (
+          <div className="p-4 border-t border-slate-200 bg-slate-50 mt-auto shrink-0">
+            <p className="sandi-kriptik text-slate-400 text-center text-sm opacity-50 hover:opacity-100 transition-opacity cursor-default hover:text-red-600">
+              SVNKEY OVERRIDE ACTIVE
+            </p>
+          </div>
+        )}
+
       </aside>
 
       {/* KONTEN UTAMA */}
