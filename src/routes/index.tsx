@@ -421,7 +421,6 @@ function Index() {
                   </div>
                 </div>
 
-                {/* 🎯 TOMBOL YANG TERHUBUNG LANGSUNG KE FLOATING CHAT */}
                 <div className="flex items-end justify-between mt-auto pt-4">
                   <button 
                     onClick={handleBantuanHsDX}
@@ -431,13 +430,11 @@ function Index() {
                     {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
                     {loading ? "Memproses HsDX..." : "Jalankan HsDX"}
                   </button>
-
                   <div className="ml-4 flex flex-col items-center justify-center text-indigo-400 opacity-80 bg-indigo-50 p-2 rounded-lg border border-indigo-100">
                     <Heart className="w-6 h-6" fill="currentColor"/>
                     <span className="text-[8px] font-black tracking-widest mt-1">HsDX</span>
                   </div>
                 </div>
-
               </div>
             </div>
           </div>
