@@ -1,9 +1,3 @@
-font-face {
-  font-family: 'Dovahkiin';
-  src: url('/fonts/Dovahkiin.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-}
 
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type FormEvent } from "react";
