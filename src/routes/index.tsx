@@ -258,50 +258,13 @@ function Index() {
     );
   }
 
-  // ==========================================
+ // ==========================================
   // 2. TAMPILAN DASHBOARD SIMRS UTAMA
   // ==========================================
   return (
     <div className="min-h-screen bg-slate-100 flex font-sans text-slate-800 relative">
       
       {/* SIDEBAR MENU */}
-      <aside className={`${sidebarOpen ? "w-64" : "w-20"} bg-white border-r border-slate-200 transition-all duration-300 flex flex-col z-30 shrink-0 shadow-sm`}>
-        <div className="h-16 flex items-center justify-between px-4 border-b border-slate-100">
-          {sidebarOpen ? (
-            <div className="flex items-center gap-2">
-              <span className="bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded text-xs">SH</span>
-              <span className="font-extrabold text-sm text-slate-800">Harapan Sehat</span>
-            </div>
-          ) : (
-            <span className="font-bold text-emerald-600 mx-auto">SH</span>
-          )}
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-1 rounded-lg hover:bg-slate-100 text-slate-500"><Menu className="w-5 h-5" /></button>
-        </div>
-        <div className="flex-1 overflow-y-auto py-3 px-2 space-y-1">
-          {[
-            { name: "DASHBOARD", icon: LayoutDashboard },
-            { name: "PROGRAM KERJA 2026", icon: FolderKanban },
-            { name: "PROGRAM KERJA 2025", icon: FolderKanban },
-            { name: "SURVEY", icon: ClipboardList },
-            { name: "ADMISI & OPERASIONAL", icon: Building2 },
-            { name: "PENDAFTARAN", icon: UserPlus },
-            { name: "PERAWAT POLI", icon: Users },
-            { name: "POLI RAWAT JALAN", icon: Stethoscope },
-            { name: "UGD", icon: ShieldAlert },
-            { name: "OBSERVASI", icon: ClipboardList },
-            { name: "RAWAT INAP", icon: BedDouble },
-            { name: "APOTEK", icon: Pill },
-          ].map((item) => {
-            const Icon = item.icon;
-            const isActive = activeMenu === item.name;
-            return (
-              <button
-                key={item.name}
-                onClick={() => setActiveMenu(item.name)}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium transition ${isActive ? "bg-teal-700 text-white shadow-md" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}
-              >
-                <div className="flex items-center gap-3"><Icon className="w-4 h-4 shrink-0" />{sidebarOpen && <span className="truncate">{item.name}</span>}</div>
-               {/* SIDEBAR MENU */}
       <aside className={`${sidebarOpen ? "w-64" : "w-20"} bg-white border-r border-slate-200 transition-all duration-300 flex flex-col z-30 shrink-0 shadow-sm`}>
         <div className="h-16 flex items-center justify-between px-4 border-b border-slate-100">
           {sidebarOpen ? (
@@ -352,7 +315,6 @@ function Index() {
             </p>
           </div>
         )}
-
       </aside>
 
       {/* KONTEN UTAMA */}
@@ -481,6 +443,49 @@ function Index() {
           </div>
         </main>
       </div>
+
+      {/* ============================================================== */}
+      {/* FLOATING AI CHAT ASSISTANT (TAMPILAN INTERAKTIF HsDX) */}
+      {/* ============================================================== */}
+      <div className="fixed bottom-6 right-6 z-50">
+        {isOpen && (
+          <div className="mb-4 w-[360px] md:w-[400px] h-[520px] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-fade-in">
+            <div className="bg-indigo-700 text-white p-4 flex items-center justify-between shrink-0 shadow-sm">
+              <div className="flex items-center gap-2.5">
+                <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center border border-indigo-500"><Heart className="h-4 w-4 text-white" fill="currentColor" /></div>
+                <div>
+                  <h3 className="font-bold text-sm leading-tight">Mesin HsDX ({selectedRoom})</h3>
+                  <p className="text-[10px] text-indigo-200 flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Terhubung ke Railway API</p>
+                </div>
+              </div>
+              <button onClick={() => setIsOpen(false)} className="text-indigo-200 hover:text-white p-1 rounded-lg transition"><X className="h-5 w-5" /></button>
+            </div>
+            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 bg-slate-50/50">
+              {messages.map((m) => (<MessageBubble key={m.id} message={m} onSend={sendMessage} />))}
+              {loading && (
+                <div className="flex items-center gap-2 my-2"><Avatar role="doctor" /><div className="bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm"><Loader2 className="h-4 w-4 animate-spin text-indigo-600" /></div></div>
+              )}
+            </div>
+            {messages.length <= 1 && (
+              <div className="px-3 py-2 bg-white border-t border-slate-100 flex gap-1.5 overflow-x-auto">
+                {QUICK_PROMPTS.map((p) => (<button key={p} onClick={() => sendMessage(p)} className="shrink-0 rounded-full border border-indigo-200 bg-indigo-50/50 px-3 py-1 text-[11px] font-medium text-indigo-700 hover:bg-indigo-100">{p}</button>))}
+              </div>
+            )}
+            <form onSubmit={handleSubmit} className="p-3 bg-white border-t border-slate-200 shrink-0 flex items-center gap-2">
+              <textarea ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }} rows={1} placeholder={`Tanya HsDX seputar ${selectedRoom}...`} className="flex-1 resize-none bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-indigo-500 max-h-20" disabled={loading}/>
+              <button type="submit" disabled={loading || !input.trim()} className="h-9 w-9 shrink-0 bg-indigo-600 text-white rounded-xl flex items-center justify-center hover:bg-indigo-700 transition disabled:opacity-50 shadow-sm"><Send className="h-4 w-4" /></button>
+            </form>
+          </div>
+        )}
+        <button onClick={() => setIsOpen(!isOpen)} className="h-14 w-14 rounded-full bg-indigo-600 text-white shadow-xl flex items-center justify-center hover:bg-indigo-700 transition-all hover:scale-105 relative group">
+          <MessageSquare className="h-6 w-6" />
+          <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-emerald-500 border-2 border-white animate-pulse"></span>
+        </button>
+      </div>
+
+    </div>
+  );
+}
 
       {/* ============================================================== */}
       {/* FLOATING AI CHAT ASSISTANT (TAMPILAN INTERAKTIF HsDX) */}
