@@ -1,4 +1,3 @@
-
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
@@ -39,7 +38,6 @@ function MessageBubble({ message, onSend }: { message: ChatMessage, onSend: (tex
   let questions: string[] = [];
   let recommendationText = "";
 
-  // PARSER UNTUK MEMBUAT TOMBOL INTERAKTIF
   if (!isUser && message.content.includes("PERTANYAAN LANJUTAN UNTUK MEMASTIKAN:")) {
     const parts = message.content.split("PERTANYAAN LANJUTAN UNTUK MEMASTIKAN:");
     mainText = parts[0].trim();
@@ -62,44 +60,26 @@ function MessageBubble({ message, onSend }: { message: ChatMessage, onSend: (tex
               strong: ({ node, ...props }) => <strong className={`font-semibold ${isUser ? "text-white" : "text-slate-900"}`} {...props} />,
             }}>{mainText}</ReactMarkdown>
 
-          {/* RENDER KOTAK PERTANYAAN DENGAN TOMBOL YA / TIDAK */}
           {questions.length > 0 && (
             <div className="mt-3 pt-3 border-t border-indigo-100">
               <div className="flex flex-col gap-3">
                 {questions.map((q, i) => {
                   const rawText = q.replace(/\*\*/g, '').trim();
                   if (!rawText) return null;
-
-                  // Deteksi pola awalan A, B, C
                   const match = rawText.match(/^([a-zA-Z0-9]\.)\s*(.*)/);
                   const prefix = match ? match[1].toUpperCase() : "•";
                   const cleanQ = match ? match[2] : rawText;
 
                   return (
                     <div key={i} className="flex flex-col rounded-lg border border-indigo-200 bg-indigo-50/80 p-2.5 transition-all hover:border-indigo-300 shadow-sm">
-                      
-                      {/* Teks Pertanyaan (Label) */}
                       <div className="flex items-start text-xs font-medium text-indigo-900 mb-2.5">
                         <span className="font-extrabold text-indigo-700 w-5 shrink-0">{prefix}</span>
                         <span className="leading-relaxed">{cleanQ}</span>
                       </div>
-                      
-                      {/* Tombol Aksi (Ya / Tidak) */}
                       <div className="flex items-center gap-2 ml-5">
-                        <button 
-                          onClick={() => onSend(`Ya, pasien terkonfirmasi mengalami ini: ${cleanQ}`)}
-                          className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white px-2 py-1.5 rounded text-[10px] font-bold tracking-wide transition-colors shadow-sm"
-                        >
-                          Terkonfirmasi (Ya)
-                        </button>
-                        <button 
-                          onClick={() => onSend(`Tidak, pasien negatif / tidak mengalami ini: ${cleanQ}`)}
-                          className="flex-1 bg-rose-500 hover:bg-rose-600 text-white px-2 py-1.5 rounded text-[10px] font-bold tracking-wide transition-colors shadow-sm"
-                        >
-                          Negatif (Tidak)
-                        </button>
+                        <button onClick={() => onSend(`Ya, pasien terkonfirmasi mengalami ini: ${cleanQ}`)} className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white px-2 py-1.5 rounded text-[10px] font-bold tracking-wide transition-colors shadow-sm">Terkonfirmasi (Ya)</button>
+                        <button onClick={() => onSend(`Tidak, pasien negatif / tidak mengalami ini: ${cleanQ}`)} className="flex-1 bg-rose-500 hover:bg-rose-600 text-white px-2 py-1.5 rounded text-[10px] font-bold tracking-wide transition-colors shadow-sm">Negatif (Tidak)</button>
                       </div>
-
                     </div>
                   )
                 })}
@@ -121,19 +101,16 @@ function MessageBubble({ message, onSend }: { message: ChatMessage, onSend: (tex
 }
 
 function Index() {
-  // --- STATE LOGIN & SISTEM ---
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("administrator");
   const [password, setPassword] = useState("");
   const [selectedRoom, setSelectedRoom] = useState("Poli Umum");
   const [showPassword, setShowPassword] = useState(false);
   
-  // --- STATE DASHBOARD ---
   const [activeMenu, setActiveMenu] = useState("DASHBOARD");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [currentTime, setCurrentTime] = useState("");
 
-  // --- STATE FORM PASIEN (HsDX) ---
   const [formData, setFormData] = useState({
     nama: "Rayi Amada Surya Ridwan",
     umur: "18",
@@ -143,7 +120,6 @@ function Index() {
     riwayat: "Tidak ada alergi obat."
   });
 
-  // --- STATE CHAT MELAYANG (FLOATING AI) ---
   const [isOpen, setIsOpen] = useState(false);
   const pesanAwal = { id: makeId(), role: "doctor" as const, content: "Halo! Saya mesin analitik HsDX. Ada data klinis yang perlu ditinjau? 👋" };
   const [messages, setMessages] = useState<ChatMessage[]>([pesanAwal]);
@@ -168,9 +144,6 @@ function Index() {
     }
   }, [messages, loading, isOpen]);
 
-  // ==========================================
-  // FUNGSI API UTAMA (MENGIRIM PESAN KE RAILWAY)
-  // ==========================================
   async function sendMessage(text: string) {
     if (!text || loading) return;
     const userMsg: ChatMessage = { id: makeId(), role: "user", content: text };
@@ -206,25 +179,16 @@ function Index() {
     sendMessage(input.trim()); 
   }
 
-  // ==========================================
-  // FUNGSI KONEKTOR: TOMBOL FORM -> FLOATING CHAT
-  // ==========================================
   const handleBantuanHsDX = () => {
     if (!formData.keluhan.trim()) {
       alert("Keluhan pasien tidak boleh kosong sebelum menjalankan analisis.");
       return;
     }
-
-    // Gabungkan data form menjadi prompt yang rapi
     const autoPrompt = `SKRINING KLINIS PASIEN:\n- Usia: ${formData.umur} tahun\n- Gender: ${formData.jenis_kelamin}\n- Tensi: ${formData.tensi}\n- Keluhan: ${formData.keluhan}\n- Riwayat: ${formData.riwayat}`;
-
-    setIsOpen(true); // Membuka floating chat otomatis
-    sendMessage(autoPrompt); // Mengirim pesan langsung ke chat
+    setIsOpen(true);
+    sendMessage(autoPrompt);
   };
 
-  // ==========================================
-  // 1. TAMPILAN HALAMAN LOGIN
-  // ==========================================
   if (!isLoggedIn) {
     return (
       <div className="relative min-h-screen flex items-center justify-center bg-slate-900 overflow-hidden font-sans">
@@ -258,9 +222,6 @@ function Index() {
     );
   }
 
- // ==========================================
-  // 2. TAMPILAN DASHBOARD SIMRS UTAMA
-  // ==========================================
   return (
     <div className="min-h-screen bg-slate-100 flex font-sans text-slate-800 relative">
       
@@ -307,7 +268,6 @@ function Index() {
           })}
         </div>
         
-        {/* === AREA PESAN RAHASIA SVNKEY === */}
         {sidebarOpen && (
           <div className="p-4 border-t border-slate-200 bg-slate-50 mt-auto shrink-0">
             <p className="sandi-kriptik text-slate-400 text-center text-sm opacity-50 hover:opacity-100 transition-opacity cursor-default hover:text-red-600">
@@ -334,7 +294,6 @@ function Index() {
           </div>
         </header>
 
-        {/* BODY DASHBOARD */}
         <main className="flex-1 overflow-y-auto p-6 space-y-6">
           <div className="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-slate-200">
             <div>
@@ -360,16 +319,12 @@ function Index() {
             ))}
           </div>
 
-          {/* ============================================================== */}
-          {/* AREA FORM PASIEN & TOMBOL TRIGGER HsDX */}
-          {/* ============================================================== */}
           <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 relative">
             <h3 className="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
               <Stethoscope className="w-4 h-4 text-teal-600" /> Manajemen Pasien & Skrining HsDX
             </h3>
             
             <div className="flex flex-col md:flex-row gap-8">
-              
               <div className="flex-1 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -441,52 +396,7 @@ function Index() {
         </main>
       </div>
 
-      {/* ============================================================== */}
-      {/* FLOATING AI CHAT ASSISTANT (TAMPILAN INTERAKTIF HsDX) */}
-      {/* ============================================================== */}
-      <div className="fixed bottom-6 right-6 z-50">
-        {isOpen && (
-          <div className="mb-4 w-[360px] md:w-[400px] h-[520px] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-fade-in">
-            <div className="bg-indigo-700 text-white p-4 flex items-center justify-between shrink-0 shadow-sm">
-              <div className="flex items-center gap-2.5">
-                <div className="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center border border-indigo-500"><Heart className="h-4 w-4 text-white" fill="currentColor" /></div>
-                <div>
-                  <h3 className="font-bold text-sm leading-tight">Mesin HsDX ({selectedRoom})</h3>
-                  <p className="text-[10px] text-indigo-200 flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Terhubung ke Railway API</p>
-                </div>
-              </div>
-              <button onClick={() => setIsOpen(false)} className="text-indigo-200 hover:text-white p-1 rounded-lg transition"><X className="h-5 w-5" /></button>
-            </div>
-            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 bg-slate-50/50">
-              {messages.map((m) => (<MessageBubble key={m.id} message={m} onSend={sendMessage} />))}
-              {loading && (
-                <div className="flex items-center gap-2 my-2"><Avatar role="doctor" /><div className="bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm"><Loader2 className="h-4 w-4 animate-spin text-indigo-600" /></div></div>
-              )}
-            </div>
-            {messages.length <= 1 && (
-              <div className="px-3 py-2 bg-white border-t border-slate-100 flex gap-1.5 overflow-x-auto">
-                {QUICK_PROMPTS.map((p) => (<button key={p} onClick={() => sendMessage(p)} className="shrink-0 rounded-full border border-indigo-200 bg-indigo-50/50 px-3 py-1 text-[11px] font-medium text-indigo-700 hover:bg-indigo-100">{p}</button>))}
-              </div>
-            )}
-            <form onSubmit={handleSubmit} className="p-3 bg-white border-t border-slate-200 shrink-0 flex items-center gap-2">
-              <textarea ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }} rows={1} placeholder={`Tanya HsDX seputar ${selectedRoom}...`} className="flex-1 resize-none bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-indigo-500 max-h-20" disabled={loading}/>
-              <button type="submit" disabled={loading || !input.trim()} className="h-9 w-9 shrink-0 bg-indigo-600 text-white rounded-xl flex items-center justify-center hover:bg-indigo-700 transition disabled:opacity-50 shadow-sm"><Send className="h-4 w-4" /></button>
-            </form>
-          </div>
-        )}
-        <button onClick={() => setIsOpen(!isOpen)} className="h-14 w-14 rounded-full bg-indigo-600 text-white shadow-xl flex items-center justify-center hover:bg-indigo-700 transition-all hover:scale-105 relative group">
-          <MessageSquare className="h-6 w-6" />
-          <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-emerald-500 border-2 border-white animate-pulse"></span>
-        </button>
-      </div>
-
-    </div>
-  );
-}
-
-      {/* ============================================================== */}
-      {/* FLOATING AI CHAT ASSISTANT (TAMPILAN INTERAKTIF HsDX) */}
-      {/* ============================================================== */}
+      {/* FLOATING AI CHAT ASSISTANT */}
       <div className="fixed bottom-6 right-6 z-50">
         {isOpen && (
           <div className="mb-4 w-[360px] md:w-[400px] h-[520px] bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-fade-in">
