@@ -1,3 +1,18 @@
+@font-face {
+  font-family: 'Dovahkiin';
+  src: url('/fonts/Dovahkiin.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Ini adalah "tombol sakelar" untuk mengubah teks biasa menjadi sandi */
+.sandi-kriptik {
+  font-family: 'Dovahkiin', monospace !important;
+  font-size: 1.25rem;
+  letter-spacing: 2px;
+  user-select: none; /* Opsional: Agar orang tidak bisa memblok/copy teksnya dengan mudah */
+}
+
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
@@ -305,6 +320,14 @@ function Index() {
             );
           })}
         </div>
+        
+        {/* === AREA PESAN RAHASIA (Hanya bisa dibaca sistem/Anda) === */}
+        <div className="p-4 border-t border-slate-200 bg-slate-50 mt-auto">
+          <p className="sandi-kriptik text-slate-400 text-center text-sm opacity-50 hover:opacity-100 transition-opacity cursor-default hover:text-red-600">
+            SVNKEY OVERRIDE ACTIVE
+          </p>
+        </div>
+        
       </aside>
 
       {/* KONTEN UTAMA */}
