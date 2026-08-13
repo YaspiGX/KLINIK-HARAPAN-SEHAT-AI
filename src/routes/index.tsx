@@ -1,16 +1,8 @@
-@font-face {
+font-face {
   font-family: 'Dovahkiin';
   src: url('/fonts/Dovahkiin.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
-}
-
-/* Ini adalah "tombol sakelar" untuk mengubah teks biasa menjadi sandi */
-.sandi-kriptik {
-  font-family: 'Dovahkiin', monospace !important;
-  font-size: 1.25rem;
-  letter-spacing: 2px;
-  user-select: none; /* Opsional: Agar orang tidak bisa memblok/copy teksnya dengan mudah */
 }
 
 import { createFileRoute } from "@tanstack/react-router";
