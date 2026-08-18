@@ -9,7 +9,6 @@ import os
 # ==========================================
 # 🛡️ KUNCI RAHASIA ENKRIPSI DATABASE
 # ==========================================
-# Sangat disarankan: Ganti dengan os.getenv("ENCRYPTION_KEY") di production Railway
 SECRET_ENCRYPTION_KEY = b'vS-hEbxZ97z9O-_fGWeYvYkM2_P8_kS3R5U5y3V7wQA='
 cipher_suite = Fernet(SECRET_ENCRYPTION_KEY)
 
@@ -27,7 +26,6 @@ def decrypt_data(text: str) -> str:
 # ==========================================
 # 🔑 INISIALISASI CLIENT GROQ
 # ==========================================
-# Sangat disarankan: Jangan hardcode API key. Gunakan environment variable di Railway.
 api_key = os.getenv("GROQ_API_KEY", "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") 
 groq_client = Groq(api_key=api_key)
 
@@ -38,7 +36,6 @@ app = FastAPI()
 # ==========================================
 app.add_middleware(
     CORSMiddleware, 
-    # Ganti "*" dengan URL Vercel Anda di production (misal: "https://klinik.vercel.app")
     allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"], 
@@ -88,7 +85,6 @@ def baca_buku_medis(filename):
             return file.read()
     return "Gunakan pengetahuan medismu sendiri karena referensi tidak ditemukan."
 
-# Cache buku medis saat server menyala agar tidak diulang tiap request
 REFERENSI_UMUM = baca_buku_medis("buku_umum.txt")
 REFERENSI_GIGI = baca_buku_medis("buku_gigi.txt")
 
@@ -97,18 +93,15 @@ class EditData(BaseModel):
     jawaban_ai: str
 
 # ==========================================
-# 🧠 LOGIK AI (MENGGUNAKAN GROQ)
+# 🧠 LOGIK AI (MENGGUNAKAN LLAMA 4 GROQ)
 # ==========================================
 async def handle_konsultasi_logic(request: Request, db_file: str, referensi_teks: str, role_title: str):
     try:
         data = await request.json()
         raw_messages = data.get("messages", [])
         
-        # Batasi histori agar tidak kehabisan token context (hanya 6 pesan terakhir)
         recent_messages = raw_messages[-6:] if len(raw_messages) > 6 else raw_messages
         
-        # Format histori pesan untuk Groq/OpenAI spec
-        # Format histori pesan untuk Groq/OpenAI spec dengan Logika 2 Fase
         system_instruction = f"""Kamu adalah mesin analitik klinis bernama HsDX di Klinik Harapan Sehat.
         PEDOMAN MEDIS SINGKAT: {referensi_teks[:1500]}
         
@@ -131,32 +124,28 @@ async def handle_konsultasi_logic(request: Request, db_file: str, referensi_teks
         FASE 2: JIKA INPUT ADALAH JAWABAN (Misal: "Ya", "Tidak", "Benar", atau dokter memilih Opsi A/B/C):
         DILARANG KERAS MENGULANGI FORMAT FASE 1! 
         1. Evaluasi jawaban pasien untuk mengerucutkan diagnosis.
-        2. Berikan kesimpulan final atau instruksi medis spesifik secara singkat (contoh: "Karena pasien mengonfirmasi demam tinggi, diagnosis menguat ke arah DBD. Segera lakukan cek darah.").
+        2. Berikan kesimpulan final atau instruksi medis spesifik secara singkat.
         3. Jika belum yakin, ajukan maksimal 1 pertanyaan konfirmasi lanjutan (Yes/No).
         """
+        
         formatted_messages = [
             {"role": "system", "content": system_instruction}
         ]
         
         for msg in recent_messages:
-            # Map role dari frontend ('user' atau 'doctor') ke spec Groq ('user' atau 'assistant')
             role = "user" if msg["role"] == "user" else "assistant"
             formatted_messages.append({"role": role, "content": msg["content"]})
             
-        # Panggilan ke Groq 
         chat_completion = groq_client.chat.completions.create(
             messages=formatted_messages,
-            model="llama-3.3-70b-versatile", # Model Llama 3.3 70B di Groq
+            model="meta-llama/llama-4-scout-17b-16e-instruct",
             temperature=0.3,
             max_tokens=1024,
         )
         
         pesan_ai = chat_completion.choices[0].message.content
-
-        # Ekstraksi pesan terakhir pasien untuk disimpan
         pesan_pasien = raw_messages[-1]["content"] if raw_messages else "Pesan kosong"
         
-        # Simpan ke Database
         encrypted_pasien = encrypt_data(pesan_pasien)
         encrypted_ai = encrypt_data(pesan_ai)
         
@@ -170,16 +159,15 @@ async def handle_konsultasi_logic(request: Request, db_file: str, referensi_teks
         return {"pesan": pesan_ai}
         
     except Exception as e:
-        # MITIGASI ERROR: Cegah error JSON bocor ke UI pasien
         print(f"CRITICAL ERROR AI: {str(e)}")
-        return {"pesan": "Sistem kami sedang mengalami antrean. Silakan coba kembali dalam beberapa saat."}
+        return {"pesan": f"⚠️ DEBUG ERROR GROQ: {str(e)}"}
 
 # ==========================================
 # 🩺 ENDPOINT RUTING UTAMA
 # ==========================================
 @app.get("/")
 async def root():
-    return {"status": "Server Klinik Harapan Sehat API (Groq Engine) Online! 🚀"}
+    return {"status": "Server Klinik Harapan Sehat API (Llama 4 Groq Engine) Online! 🚀"}
 
 @app.post("/konsultasi/umum")
 async def konsultasi_umum(request: Request):
