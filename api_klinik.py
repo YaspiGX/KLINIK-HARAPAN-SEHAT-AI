@@ -26,7 +26,7 @@ def decrypt_data(text: str) -> str:
 # ==========================================
 # 🔑 INISIALISASI CLIENT GROQ
 # ==========================================
-api_key = os.getenv("GROQ_API_KEY", "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")
+api_key = os.getenv("GROQ_API_KEY", "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")
 groq_client = Groq(api_key=api_key)
 
 app = FastAPI()
@@ -138,7 +138,7 @@ async def handle_konsultasi_logic(request: Request, db_file: str, referensi_teks
             
         chat_completion = groq_client.chat.completions.create(
             messages=formatted_messages,
-            model="llama-3.1-8b-instant",
+            model="llama-3.3-70b-versatile",
             temperature=0.3,
             max_tokens=1024,
         )
