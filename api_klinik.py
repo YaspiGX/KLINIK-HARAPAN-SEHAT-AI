@@ -26,7 +26,7 @@ def decrypt_data(text: str) -> str:
 # ==========================================
 # 🔑 INISIALISASI CLIENT GROQ
 # ==========================================
-api_key = os.getenv("GROQ_API_KEY", "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") 
+api_key = os.getenv("GROQ_API_KEY", "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")[cite: 4]
 groq_client = Groq(api_key=api_key)
 
 app = FastAPI()
@@ -93,7 +93,7 @@ class EditData(BaseModel):
     jawaban_ai: str
 
 # ==========================================
-# 🧠 LOGIK AI (MENGGUNAKAN LLAMA 4 GROQ)
+# 🧠 LOGIK AI (MENGGUNAKAN GROQ)
 # ==========================================
 async def handle_konsultasi_logic(request: Request, db_file: str, referensi_teks: str, role_title: str):
     try:
@@ -138,7 +138,7 @@ async def handle_konsultasi_logic(request: Request, db_file: str, referensi_teks
             
         chat_completion = groq_client.chat.completions.create(
             messages=formatted_messages,
-            model="meta-llama/llama-4-scout-17b-16e-instruct",
+            model="llama-3.3-70b-versatile",  # <-- Menggunakan model Groq yang stabil & valid
             temperature=0.3,
             max_tokens=1024,
         )
@@ -167,7 +167,7 @@ async def handle_konsultasi_logic(request: Request, db_file: str, referensi_teks
 # ==========================================
 @app.get("/")
 async def root():
-    return {"status": "Server Klinik Harapan Sehat API (Llama 4 Groq Engine) Online! 🚀"}
+    return {"status": "Server Klinik Harapan Sehat API (Groq Engine) Online! 🚀"}
 
 @app.post("/konsultasi/umum")
 async def konsultasi_umum(request: Request):
