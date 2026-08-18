@@ -146,7 +146,7 @@ async def handle_konsultasi_logic(request: Request, db_file: str, referensi_teks
         # Panggilan ke Groq 
         chat_completion = groq_client.chat.completions.create(
             messages=formatted_messages,
-            model="llama-3.3-70b-versatile", # Model Llama 3.3 70B di Groq
+            model="llama-3.1-8b-instant", # Model Llama 3.3 70B di Groq
             temperature=0.3,
             max_tokens=1024,
         )
