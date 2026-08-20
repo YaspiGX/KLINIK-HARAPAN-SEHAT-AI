@@ -2,7 +2,8 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from cryptography.fernet import Fernet
 from pydantic import BaseModel
-from groq import Groq
+from google import genai
+from google.genai import types
 import sqlite3
 import os
 
@@ -24,10 +25,11 @@ def decrypt_data(text: str) -> str:
         return text 
 
 # ==========================================
-# 🔑 INISIALISASI CLIENT GROQ
+# 🔑 INISIALISASI CLIENT GEMINI
 # ==========================================
-api_key = os.getenv("GROQ_API_KEY", "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")
-groq_client = Groq(api_key=api_key)
+# Pastikan variabel lingkungan GEMINI_API_KEY diset di Railway, atau masukkan kuncinya di sini
+api_key = os.getenv("GEMINI_API_KEY", "AQ.Ab8RN6LLM-6CfWv4ObSUE06qmaIdy5zaiFY1wi4SsizUGn4ZaA")
+gemini_client = genai.Client(api_key=api_key)
 
 app = FastAPI()
 
@@ -93,7 +95,7 @@ class EditData(BaseModel):
     jawaban_ai: str
 
 # ==========================================
-# 🧠 LOGIK AI (MENGGUNAKAN GROQ)
+# 🧠 LOGIK AI (MENGGUNAKAN GEMINI 2.0 FLASH)
 # ==========================================
 async def handle_konsultasi_logic(request: Request, db_file: str, referensi_teks: str, role_title: str):
     try:
@@ -128,24 +130,26 @@ async def handle_konsultasi_logic(request: Request, db_file: str, referensi_teks
         3. Jika belum yakin, ajukan maksimal 1 pertanyaan konfirmasi lanjutan (Yes/No).
         """
         
-        formatted_messages = [
-            {"role": "system", "content": system_instruction}
-        ]
-        
+        # Format histori percakapan agar dibaca rapi oleh Gemini
+        dialogue_history = ""
         for msg in recent_messages:
-            role = "user" if msg["role"] == "user" else "assistant"
-            formatted_messages.append({"role": role, "content": msg["content"]})
-            
-        chat_completion = groq_client.chat.completions.create(
-            messages=formatted_messages,
-            model="llama-3.3-70b-versatile",  # <-- Pastikan ini yang dipakai
-            temperature=0.3,
-            max_tokens=1024,
+            speaker = "Dokter/Pasien" if msg["role"] == "user" else "HsDX"
+            dialogue_history += f"{speaker}: {msg['content']}\n"
+
+        # Panggilan ke Google Gemini 2.0 Flash
+        response = gemini_client.models.generate_content(
+            model='gemini-2.0-flash',
+            contents=dialogue_history,
+            config=types.GenerateContentConfig(
+                system_instruction=system_instruction,
+                temperature=0.3,
+            )
         )
         
-        pesan_ai = chat_completion.choices[0].message.content
+        pesan_ai = response.text
         pesan_pasien = raw_messages[-1]["content"] if raw_messages else "Pesan kosong"
         
+        # Simpan ke Database dengan Enkripsi
         encrypted_pasien = encrypt_data(pesan_pasien)
         encrypted_ai = encrypt_data(pesan_ai)
         
@@ -159,15 +163,15 @@ async def handle_konsultasi_logic(request: Request, db_file: str, referensi_teks
         return {"pesan": pesan_ai}
         
     except Exception as e:
-        print(f"CRITICAL ERROR AI: {str(e)}")
-        return {"pesan": f"⚠️ DEBUG ERROR GROQ: {str(e)}"}
+        print(f"CRITICAL ERROR AI GEMINI: {str(e)}")
+        return {"pesan": f"⚠️ DEBUG ERROR GEMINI: {str(e)}"}
 
 # ==========================================
 # 🩺 ENDPOINT RUTING UTAMA
 # ==========================================
 @app.get("/")
 async def root():
-    return {"status": "Server Klinik Harapan Sehat API (Groq Engine) Online! 🚀"}
+    return {"status": "Server Klinik Harapan Sehat API (Gemini Engine) Online! 🚀"}
 
 @app.post("/konsultasi/umum")
 async def konsultasi_umum(request: Request):
